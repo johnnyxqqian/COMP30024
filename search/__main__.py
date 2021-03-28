@@ -1,3 +1,5 @@
 from search.main import main
+import pdb
 
-main()
+main('test.json')
+
