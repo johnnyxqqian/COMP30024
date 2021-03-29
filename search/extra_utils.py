@@ -7,6 +7,8 @@ Simon Chen 1003925
 Xue Qiang Qian
 """
 
+import search.swing
+
 # Movement
 MOVE_DISTANCE = 1
 SLIDE_DISTANCE = 1
@@ -15,8 +17,8 @@ DIRECTIONS = ((1, 0), (1, -1), (0, -1),
               (-1, 0), (-1, 1), (0, 1),)
 
 NUM_DIRECTIONS = 6
-Q_INDEX = 1
-R_INDEX = 2
+Q_INDEX = 2
+R_INDEX = 1
 T_INDEX = 0
 
 ROCK = 'r'

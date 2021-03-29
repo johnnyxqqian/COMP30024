@@ -3,29 +3,11 @@
 # move #
 
 import numpy
+from search.init import *
+
+
+
 from numpy.lib.stride_tricks import as_strided
-
-MOVE_DISTANCE = 1
-
-DIRECTIONS = ((1, 0), (1, -1), (0, -1), 
-    (-1, 0), (-1, 1), (0, 1),)
-
-NUM_DIRECTIONS = 6
-Q_INDEX = 1
-R_INDEX = 2
-T_INDEX = 0
-
-ROCK = 'r'
-PAPER ='p'
-SCISSORS ='s'
-BLOCKED = ""
-
-COORD_Q_INDEX = 0
-COORD_R_INDEX = 1
-
-LOWER_TILES = ["r", "p", "s"]
-UPPER_TILES = ["R", "P", "S"]
-
 # dictionary for RPS outcomes
 RPS_OUTCOMES = {
     (ROCK, PAPER): False,
@@ -55,7 +37,7 @@ def swingable_hex_check(current_tile, game_state):
     for tile in neighbours:
 
         # if not a block tile
-        if(tile[0]):
+        if(tile[0] in UPPER_TILES):
             swing_tiles.append(tile)
 
             # list of 3-tuples, order is same as swing_tiles so we can trace them
