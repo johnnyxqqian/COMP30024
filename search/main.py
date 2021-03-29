@@ -33,7 +33,7 @@ def main(filename):
         sys.exit(1)
 
     # initialise game object
-    game = RoPaSciState()
+    game = RoPaSci()
 
     # load the initial game state into the object
     game.initialise(data=data)
@@ -50,8 +50,7 @@ def main(filename):
     # insert into priority queue
 
     # HEURISTIC:
-    # Sum up for each token, calculate the sum of square root distance from the token
-    # to all the opposing teams tokens it can defeat.
+    # Each token "costs" 10
 
     # TODO:
     # Find and print a solution to the board configuration described
@@ -59,6 +58,5 @@ def main(filename):
     # Why not start by trying to print this configuration out using the
     # `print_board` helper function? (See the `util.py` source code for
     # usage information).
-
 
 main('test.json')
