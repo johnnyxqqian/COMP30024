@@ -7,41 +7,7 @@ Simon Chen 1003925
 Xue Qiang Qian
 """
 
-# Movement
-MOVE_DISTANCE = 1
-SLIDE_DISTANCE = 1
-
-DIRECTIONS = ((1, 0), (1, -1), (0, -1),
-              (-1, 0), (-1, 1), (0, 1),)
-
-NUM_DIRECTIONS = 6
-Q_INDEX = 1
-R_INDEX = 2
-T_INDEX = 0
-
-ROCK = 'r'
-PAPER = 'p'
-SCISSORS = 's'
-BLOCKED = ""
-
-COORD_Q_INDEX = 0
-COORD_R_INDEX = 1
-
-LOWER_TILES = ["r", "p", "s"]
-UPPER_TILES = ["R", "P", "S"]
-
-# dictionary for RPS outcomes
-RPS_OUTCOMES = {
-    (ROCK, PAPER): False,
-    (PAPER, ROCK): True,
-
-    (ROCK, SCISSORS): True,
-    (SCISSORS, ROCK): False,
-
-    (PAPER, SCISSORS): False,
-    (SCISSORS, PAPER): True
-}
-
+from search.swing import *
 
 class RoPaSciState(object):
 
@@ -163,7 +129,33 @@ class RoPaSciState(object):
         """
         given a list of tokens on the hex, returns the tokens that survive on that hex
         """
-        # todo johnny resolve
+
+        survivors = []
+
+        # tracking unique tokens
+        unique_tokens = 0
+        unique_token_set = set()
+
+        # if we have more than 2 tokens
+        if len(tokens) >2 :
+            for token in tokens:
+
+
+                # check if we come across a new token
+                if token.lower() not in unique_token_set:
+                    unique_token_set.add(token).lower()
+                    unique_tokens+=1
+               
+                # if we R,P and S, no tokens survive
+                if unique_tokens == len(LOWER_TILES):
+                    return 0
+
+        for i in range(len(tokens)-1):
+            if RPS_OUTCOMES(tokens[i], tokens[i+1]):
+                survivors.append(tokens[i])
+            
+        return survivors
+        #todo johnny resolve
         pass
 
     @staticmethod
@@ -206,27 +198,42 @@ class RoPaSciState(object):
             new_state.apply_move(a, b, t)
         return new_state
 
-    def list_legal_moves(self, a):
+    def list_legal_moves(self, base_hex):
         """
         Given the current board state, returns a list of all possible moves that can be made from hex a
         1. iterates through all neighbouring hexes and checks legality. If legal, append to result
         2. if there is a friendly token on a neighbouring hex, checks the legality of swing movements and appends
         """
         result = []
-        r, q = a
+        # r, q = a
         # checks neighbouring hexes and if a slide is legal
         for neighbour in self.neighbour_hexes((r, q)):
             if self.is_legal_slide((r, q), neighbour):
                 result.append(neighbour)
 
-        # todo swing checking shoey
+        # todo swing checking shoey'
+
+        
+        neighbours = self.return_neighbouring_hexes(base_hex)
+        for hex in swingable_hex_check(base_hex, self.board, neighbours):
+            if self.within_board(hex) and not self.is_blocked(hex):
+                result.append(hex)
+
+        
 
         return tuple(result)
 
     def resolve_battles(self):
         """
         Looks at board state and calls play_rps on all hexes which have two or more tokens on them
+
         """
+        survivors = []
+
+        for keys in self.board.keys():
+            if self.board[keys].length>1:
+                survivors.append(self.play_rps(self.board[keys]))
+
         pass
 
     def heuristic(self):
