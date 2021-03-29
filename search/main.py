@@ -38,15 +38,6 @@ def main(filename):
     # load the initial game state into the object
     game.initialise(data=data)
 
-    heap = heapdatastructure
-    heap.insertkey(game,game.cost)
-    while heap is not empty:
-        for move in game.possible_moves:
-            game.copy()
-            game.apply_move(move)
-            heap.insertkey(game, game.cost)
-
-
     #
     # Pseudo-ish code
     # initialise priority queue
