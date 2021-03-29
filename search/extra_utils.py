@@ -118,7 +118,7 @@ class RoPaSciState(object):
             r_add, q_add = direction
             r_new = r_in + r_add
             q_new = q_in + q_add
-            neighbour_tiles.append((r_new, q_new))
+            neighbour_hexes.append((r_new, q_new))
         return tuple(neighbour_hexes)
 
     @staticmethod
@@ -136,9 +136,9 @@ class RoPaSciState(object):
 
     @staticmethod
     def hex_distance(a, b):
-        a = axial_to_cube(a)
-        b = axial_to_cube(b)
-        return cube_distance(a, b)
+        a = RoPaSciState.axial_to_cube(a)
+        b = RoPaSciState.axial_to_cube(b)
+        return RoPaSciState.cube_distance(a, b)
 
     @staticmethod
     def legal_board_coords():
@@ -146,9 +146,9 @@ class RoPaSciState(object):
         Function returning all hexes that are legal board coordinates
         """
         result = []
-        for r in range(-4, 5):
-            for q in range(-4, 5):
-                if within_board((r, q)):
+        for r in range(-4, +4+1):
+            for q in range(-4, +4+1):
+                if RoPaSciState.within_board((r, q)):
                     result.append((r, q))
         return result
 
@@ -164,10 +164,12 @@ class RoPaSciState(object):
         """
         given a list of tokens on the hex, returns the tokens that survive on that hex
         """
+        #todo johnny resolve
         pass
 
     @staticmethod
-    def neighbour_hexes((r,q)):
+    def neighbour_hexes(coords):
+        r,q = coords
         return [(r + r_move, q + q_move) for (r_move, q_move) in DIRECTIONS]
 
     def is_blocked(self, b):
@@ -202,7 +204,7 @@ class RoPaSciState(object):
     def take_turn(self, moves):
         new_state = RoPaSciState(board=self.board, turn=self.turn + 1)
         for a, b, t in moves:
-            new.apply_move(a, b, t)
+            new_state.apply_move(a, b, t)
         return new_state
 
     def list_legal_moves(self, base_hex):
@@ -212,11 +214,11 @@ class RoPaSciState(object):
         2. if there is a friendly token on a neighbouring hex, checks the legality of swing movements and appends
         """
         result = []
+        r, q = a
         # checks neighbouring hexes and if a slide is legal
-        for neighbour in self.neighbour_hexes((r,q)):
-            b = (r + r_move, q + q_move)
-            if self.is_legal_slide((r,q), b):
-                result.append(b)
+        for neighbour in self.neighbour_hexes((r, q)):
+            if self.is_legal_slide((r, q) , neighbour):
+                result.append(neighbour)
 
         # todo swing checking shoey'
 
@@ -225,14 +227,14 @@ class RoPaSciState(object):
         return tuple(result)
 
     def resolve_battles(self):
+        """
+        Looks at board state and calls play_rps on all hexes which have two or more tokens on them
+        """
         pass
 
     def heuristic(self):
         # Cost Function: Each existing enemy token "costs" 20
         pass
-        # For each token
-        # Find the nearest enemy token it can beat
-
 
 ## Move
 # Given piece position, move from hex 1 to 2
