@@ -3,50 +3,76 @@
 # move #
 
 import numpy
+from numpy.lib.stride_tricks import as_strided
 
 MOVE_DISTANCE = 1
+
 DIRECTIONS = ((1, 0), (1, -1), (0, -1), 
     (-1, 0), (-1, 1), (0, 1),)
+
 NUM_DIRECTIONS = 6
 Q_INDEX = 1
 R_INDEX = 2
 T_INDEX = 0
+
+ROCK = 'r'
+PAPER ='p'
+SCISSORS ='s'
+BLOCKED = ""
+
+COORD_Q_INDEX = 0
+COORD_R_INDEX = 1
+
+LOWER_TILES = ["r", "p", "s"]
+UPPER_TILES = ["R", "P", "S"]
+
+# dictionary for RPS outcomes
+RPS_OUTCOMES = {
+    (ROCK, PAPER): False,
+    (PAPER, ROCK): True,
+
+    (ROCK,SCISSORS): True,
+    (SCISSORS, ROCK): False,
+
+    (PAPER, SCISSORS): False,
+    (SCISSORS, PAPER): True
+}
 
 start_coordinate = ("R",2,3)
 tile = start_coordinate
 t,q,r = start_coordinate
 current_tile = start_coordinate
 
-def swing_check(current_coordinate, game_state):
-    for position in game_state
+# def swing_check(current_coordinate, game_state):
+#     for position in game_state
 
 
 # identifies swingable & landable tiles
 def swingable_hex_check(current_tile, game_state):
     neighbours = neighour_tiles(current_tile)
     swing_tiles = []
-    land_tiles = []
+    target_tiles = []
     for tile in neighbours:
 
         # if not a block tile
         if(tile[0]):
             swing_tiles.append(tile)
-            land_tiles.append(target_tile_coordinates(current_tile, tile))
+
+            # list of 3-tuples, order is same as swing_tiles so we can trace them
+            target_tiles.append(target_tile_coordinates(current_tile, tile))
             
-        
-    # alternatively - remove non swingable tile from neighbours
 
-
+# unused but kept so other code won't give errors
 def neighour_tiles(tile):
     i=0
     neighbours = []
     while(i<NUM_DIRECTIONS):
         neighbours.append(tile+DIRECTIONS[i])
+        i+=1
     return neighbours
     
-# check for hex to swing from
-# check if hex is swingable
-
+# returns 3-tuple of target tiles resulting from a swing
+# does not check if tuples are valid
 def target_tile_coordinates(base_tile, target_tile):
     base_q = base_tile[Q_INDEX]
     base_r = base_tile[R_INDEX]
@@ -64,14 +90,43 @@ def target_tile_coordinates(base_tile, target_tile):
     return list(target_anchor, target_clockwise, target_anticlockwise)
     
 
+# checks if we should move to a tile based off game rules (assumes move is valid as per Simon's definition)
+def target_tile_check(base_tile, target_tile, game_state_dict):
+    enemy_tile = False
+    pieces_on_tile= set()
 
-def cube_to_axial(cube):
-     q = cube.x
-     r = cube.z
-     return tuple(q, r)
+    # check if empty tile
+    if game_state_dict[(target_tile[COORD_Q_INDEX], target_tile[COORD_R_INDEX])]:
+        tile = game_state_dict[(target_tile[COORD_Q_INDEX], target_tile[COORD_R_INDEX])]
+    else:
+        return True
 
-def axial_to_cube(hex):
-    x = hex[1]
-    z = hex[2]
-    y = -x-z
-    return tuple(x, y, z)
+    # blocked
+    if tile[T_INDEX]==BLOCKED:
+        return False
+
+    # tile not empty
+    if len(tile[T_INDEX]) >=1:
+
+        # storing symbols to check
+        for i in range(len(tile[0])):
+            
+            # case sensitive in case of friendly tokens
+            pieces_on_tile.add(tile[0])
+            
+            # occupied by enemy
+            if tile[T_INDEX] in LOWER_TILES:
+                enemy_tile = True
+
+                # if enemy tile and we lose, we don't move
+                if not RPS_OUTCOMES(base_tile[T_INDEX], tile[0]):
+                    return False
+
+        # >1 token with same symbol, if we move here everyone is destroyed 
+        # need to update in case of friendly fire
+
+        # if (len(tile[0])>=2) and (base_tile[T_INDEX] not in pieces_on_tile):
+        #     return False
+
+    return True
+

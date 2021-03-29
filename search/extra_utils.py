@@ -8,63 +8,208 @@ Xue Qiang Qian
 """
 
 # Movement
-directions = (
-    (1, 0),
-    (1, 0),
-    (0, 1),
-    (0, -1),
-    (-1, 1),
-    (-1, 0)
-)
+MOVE_DISTANCE = 1
+SLIDE_DISTANCE = 1
+
+DIRECTIONS = ((1, 0), (1, -1), (0, -1),
+              (-1, 0), (-1, 1), (0, 1),)
+
+NUM_DIRECTIONS = 6
+Q_INDEX = 1
+R_INDEX = 2
+T_INDEX = 0
+
+ROCK = 'r'
+PAPER = 'p'
+SCISSORS = 's'
+BLOCKED = ""
+
+COORD_Q_INDEX = 0
+COORD_R_INDEX = 1
+
+LOWER_TILES = ["r", "p", "s"]
+UPPER_TILES = ["R", "P", "S"]
+
+# dictionary for RPS outcomes
+RPS_OUTCOMES = {
+    (ROCK, PAPER): False,
+    (PAPER, ROCK): True,
+
+    (ROCK, SCISSORS): True,
+    (SCISSORS, ROCK): False,
+
+    (PAPER, SCISSORS): False,
+    (SCISSORS, PAPER): True
+}
 
 
-def return_neighbouring_hexes(input_coords):
-    neighbour_hexes = []
-    r_in, q_in = input_coords
-    for direction in directions:
-        r_add, q_add = direction
-        r_new = r_in + r_add
-        q_new = q_in + q_add
-        neighbour_tiles.append((r_new, q_new))
-    return tuple(neighbour_hexes)
+class RoPaSciState(object):
+    def __init__(self, board={}, turn=0):
+        self.board = board
+        self.turn = turn
 
+    # Game board related functions
+    def initialise(self, data):
+        """
+        Function for first initialisation, using the given JSON data object to create the initial state
+        """
+        for token, r, q in data['upper']:
+            self._insert((r, q), token.upper())
 
-def axial_to_cube(coords):
-    # coords in the form of (r,q)
-    z, x = coords
-    y = -x - z
-    return x, y, z
+        for token, r, q in data['lower']:
+            self._insert((r, q), token)
 
+        for token, r, q in data['block']:
+            self._insert((r, q), token)
 
-def cube_distance(a, b):
-    ax, ay, az = a
-    bx, by, bz = b
-    return (abs(ax - bx) + abs(ay - by) + abs(az - bz)) / 2
+    def _insert(self, coords, token):
+        """
+        Inserts token with coords into the RoPaSci dictionary
+        """
+        if coords not in self.board.keys():
+            self.board[coords] = [token]
+        else:
+            self.board[coords].append(token)
 
+    def _remove(self, coords, token):
+        """
+        Removes token with coords out of the RoPaSci dictionary
+        """
+        self.board[coords].remove(token)
+        if self.board[coords] == []:
+            del self.board[coords]
 
-def hex_distance(a, b):
-    a = axial_to_cube(a)
-    b = axial_to_cube(b)
-    return cube_distance(a, b)
+    def list_upper_tokens(self):
+        result = []
+        for (r, q), tokens in self.board.items():
+            _ = [result.append((t, r, q)) for t in tokens if t in UPPER_TILES]
+        return result
 
+    def list_lower_tokens(self):
+        result = []
+        for (r, q), tokens in self.board.items():
+            _ = [result.append((t, r, q)) for t in tokens if t in LOWER_TILES]
+        return result
 
-def legal_board_coords():
-    """
-    Function returning all hexes that are legal board coordinates
-    """
-    result = []
-    for r in range(-4, 5):
-        for q in range(-4, 5):
-            if within_board((r, q)):
-                result.append((r, q))
-    return result
+    # Hex and movement related functions
+    @staticmethod
+    def return_neighbouring_hexes(input_coords):
+        neighbour_hexes = []
+        r_in, q_in = input_coords
+        for direction in DIRECTIONS:
+            r_add, q_add = direction
+            r_new = r_in + r_add
+            q_new = q_in + q_add
+            neighbour_tiles.append((r_new, q_new))
+        return tuple(neighbour_hexes)
 
+    @staticmethod
+    def axial_to_cube(coords):
+        # coords in the form of (r,q)
+        z, x = coords
+        y = -x - z
+        return x, y, z
 
-def within_board(coords):
-    r, q = coords
-    if abs(r + q) <= 4:
+    @staticmethod
+    def cube_distance(a, b):
+        ax, ay, az = a
+        bx, by, bz = b
+        return (abs(ax - bx) + abs(ay - by) + abs(az - bz)) / 2
+
+    @staticmethod
+    def hex_distance(a, b):
+        a = axial_to_cube(a)
+        b = axial_to_cube(b)
+        return cube_distance(a, b)
+
+    @staticmethod
+    def legal_board_coords():
+        """
+        Function returning all hexes that are legal board coordinates
+        """
+        result = []
+        for r in range(-4, 5):
+            for q in range(-4, 5):
+                if within_board((r, q)):
+                    result.append((r, q))
+        return result
+
+    @staticmethod
+    def within_board(coords):
+        r, q = coords
+        if abs(r + q) <= 4:
+            return True
+        return False
+
+    @staticmethod
+    def play_rps(tokens):
+        """
+        given a list of tokens on the hex, returns the tokens that survive on that hex
+        """
+        pass
+
+    def is_blocked(self, b):
+        if BLOCKED in self.board[b]:
+            return True
+        return False
+
+    def is_legal_slide(self, a, b):
+        """
+        Checks if a slide is legal according to 3 rules:
+        1. The movement is hex distance 1
+        2. The movement is within the board boundaries
+        3. The target hex is not blocked
+        """
+        if self.hex_distance(a, b) == SLIDE_DISTANCE:
+            return False
+        if not self.within_board(b):
+            return False
+        if self.is_blocked(b):
+            return False
         return True
-    return False
+
+    def apply_move(self, a, b, token):
+        """
+        Moves a token from a>b in the game dictionary.
+        Does not check if such move is legal.
+        Returns a new RoPaSciState object
+        """
+        self._remove(a, token)
+        self._insert(b, token)
+
+    def take_turn(self, moves):
+        new_state = RoPaSciState(board=self.board, turn=self.turn + 1)
+        for a,b,t in moves:
+            new.apply_move(a,b,t)
+        return new_state
+
+    def list_legal_moves(self, a):
+        """
+        Given the current board state, returns a list of all possible moves that can be made from hex a
+        1. iterates through all neighbouring hexes and checks legality. If legal, append to result
+        2. if there is a friendly token on a neighbouring hex, checks the legality of swing movements and appends
+        """
+        result = []
+        r, q = a
+
+        # checks neighbouring hexes and if a slide is legal
+        for r_move, q_move in DIRECTIONS:
+            b = (r + r_move, q + q_move)
+            if self.is_legal_slide(a, b):
+                result.append(b)
+
+        # todo swing checking shoey
+
+        return tuple(result)
+
+    def resolve_battles(self):
+        pass
+
+    def heuristic(self):
+        # Cost Function: Each existing enemy token "costs" 20
+        pass
+        # For each token
+        # Find the nearest enemy token it can beat
 
 
 ## Move
@@ -74,20 +219,6 @@ def within_board(coords):
 # Token is "R", "P", "S", "r", "p", "s"
 
 ### TODO:
-
-### Swing Function (Check)
-# Is there an adjacent friendly token?
-# Look at opposite hexes that are not adjacent
-# Are they legal hexes?
-# If so, it is legal
-
-def legal_slide(a, b):
-    if hex_distance(a, b) > 1:
-        return False
-    if not within_board(b):
-        return False
-    # Todo implement block checking
-    return True
 
 
 from heapq import heappush, heappop, heapify
