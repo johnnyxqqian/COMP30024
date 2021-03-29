@@ -7,7 +7,7 @@ Simon Chen 1003925
 Xue Qiang Qian
 """
 
-import search.swing
+from search.swing import all
 
 # Movement
 MOVE_DISTANCE = 1
@@ -26,8 +26,8 @@ PAPER = 'p'
 SCISSORS = 's'
 BLOCKED = ""
 
-COORD_Q_INDEX = 0
-COORD_R_INDEX = 1
+COORD_Q_INDEX = 1
+COORD_R_INDEX = 0
 
 LOWER_TILES = ["r", "p", "s"]
 UPPER_TILES = ["R", "P", "S"]
@@ -205,7 +205,7 @@ class RoPaSciState(object):
             new.apply_move(a, b, t)
         return new_state
 
-    def list_legal_moves(self, a):
+    def list_legal_moves(self, base_hex):
         """
         Given the current board state, returns a list of all possible moves that can be made from hex a
         1. iterates through all neighbouring hexes and checks legality. If legal, append to result
@@ -218,7 +218,9 @@ class RoPaSciState(object):
             if self.is_legal_slide((r,q), b):
                 result.append(b)
 
-        # todo swing checking shoey
+        # todo swing checking shoey'
+
+        
 
         return tuple(result)
 

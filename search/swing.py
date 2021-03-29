@@ -3,8 +3,7 @@
 # move #
 
 import numpy
-from search.init import *
-
+from search.init import all
 
 
 from numpy.lib.stride_tricks import as_strided

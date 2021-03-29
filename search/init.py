@@ -5,9 +5,8 @@ DIRECTIONS = ((1, 0), (1, -1), (0, -1),
     (-1, 0), (-1, 1), (0, 1),)
 
 NUM_DIRECTIONS = 6
-Q_INDEX = 1
-R_INDEX = 2
-T_INDEX = 0
+Q_INDEX = 0
+R_INDEX = 1
 
 ROCK = 'r'
 PAPER ='p'
