@@ -82,15 +82,31 @@ class RoPaSciState(object):
             del self.board[coords]
 
     def list_upper_tokens(self):
-        result = []
-        for (r, q), tokens in self.board.items():
-            _ = [result.append((t, r, q)) for t in tokens if t in UPPER_TILES]
+        """
+        returns a dictionary with coordinates as the key, and a list of tokens as the value for upper team
+        """
+        result = {}
+        for coords, tokens in self.board.items():
+            for t in tokens:
+                if t in UPPER_TILES:
+                    if coords in result.keys():
+                        result[coords].append(t)
+                    else:
+                        result[coords] = [t]
         return result
 
     def list_lower_tokens(self):
-        result = []
-        for (r, q), tokens in self.board.items():
-            _ = [result.append((t, r, q)) for t in tokens if t in LOWER_TILES]
+        """
+        returns a dictionary with coordinates as the key, and a list of tokens as the value for lower team
+        """
+        result = {}
+        for coords, tokens in self.board.items():
+            for t in tokens:
+                if t in LOWER_TILES:
+                    if coords in result.keys():
+                        result[coords].append(t)
+                    else:
+                        result[coords] = [t]
         return result
 
     # Hex and movement related functions
@@ -150,6 +166,10 @@ class RoPaSciState(object):
         """
         pass
 
+    @staticmethod
+    def neighbour_hexes((r,q)):
+        return [(r + r_move, q + q_move) for (r_move, q_move) in DIRECTIONS]
+
     def is_blocked(self, b):
         if BLOCKED in self.board[b]:
             return True
@@ -172,7 +192,7 @@ class RoPaSciState(object):
 
     def apply_move(self, a, b, token):
         """
-        Moves a token from a>b in the game dictionary.
+        Moves a token from hex a> hex b in the game dictionary.
         Does not check if such move is legal.
         Returns a new RoPaSciState object
         """
@@ -181,8 +201,8 @@ class RoPaSciState(object):
 
     def take_turn(self, moves):
         new_state = RoPaSciState(board=self.board, turn=self.turn + 1)
-        for a,b,t in moves:
-            new.apply_move(a,b,t)
+        for a, b, t in moves:
+            new.apply_move(a, b, t)
         return new_state
 
     def list_legal_moves(self, a):
@@ -192,12 +212,10 @@ class RoPaSciState(object):
         2. if there is a friendly token on a neighbouring hex, checks the legality of swing movements and appends
         """
         result = []
-        r, q = a
-
         # checks neighbouring hexes and if a slide is legal
-        for r_move, q_move in DIRECTIONS:
+        for neighbour in self.neighbour_hexes((r,q)):
             b = (r + r_move, q + q_move)
-            if self.is_legal_slide(a, b):
+            if self.is_legal_slide((r,q), b):
                 result.append(b)
 
         # todo swing checking shoey
