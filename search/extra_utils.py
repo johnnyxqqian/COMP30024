@@ -142,27 +142,24 @@ class RoPaSciState(object):
 
         survivors = []
 
-        # tracking unique tokens
-        unique_tokens = 0
-        unique_token_set = set()
+        # to determine which tokens are on the board
+        token_set = set(tokens.lower())
 
-        # if we have more than 2 tokens
-        if len(tokens) > 2:
-            for token in tokens:
+        # all 3 tokens in which case all destroyed
+        if(len(token_set) == len(LOWER_TILES)):
+            return 0
 
-                # check if we come across a new token
-                if token.lower() not in unique_token_set:
-                    unique_token_set.add(token).lower()
-                    unique_tokens+=1
-               
-                # if we R,P and S, no tokens survive
-                if unique_tokens == len(LOWER_TILES):
-                    return []
+        # only 1 token
+        if len(token_set) == 1:
+            return tokens
 
-        for i in range(len(tokens)-1):
-            if RPS_OUTCOMES(tokens[i], tokens[i+1]):
-                survivors.append(tokens[i])
-            
+        # more than 1 token in which case we determine the winning token
+        winning_token = list(token_set)[0] if RPS_OUTCOMES(list(token_set)[0], list(token_set)[1]) else list(token_set)[1]
+        
+        for token in tokens:
+            if (token == winning_token) or (token == winning_token.upper()):
+                survivors.append(token)
+
         return survivors
 
     @staticmethod
