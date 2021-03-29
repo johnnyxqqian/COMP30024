@@ -10,6 +10,7 @@ Xue Qiang Qian
 from search.swing import *
 
 class RoPaSciState(object):
+
     def __init__(self, board={}, turn=0):
         self.board = board
         self.turn = turn
@@ -30,7 +31,7 @@ class RoPaSciState(object):
 
     def _insert(self, coords, token):
         """
-        Inserts token with coords into the RoPaSci dictionary
+        Inserts token with coords into the RoPaSciState dictionary
         """
         if coords not in self.board.keys():
             self.board[coords] = [token]
@@ -39,7 +40,7 @@ class RoPaSciState(object):
 
     def _remove(self, coords, token):
         """
-        Removes token with coords out of the RoPaSci dictionary
+        Removes token with coords out of the RoPaSciState dictionary
         """
         self.board[coords].remove(token)
         if self.board[coords] == []:
@@ -110,8 +111,8 @@ class RoPaSciState(object):
         Function returning all hexes that are legal board coordinates
         """
         result = []
-        for r in range(-4, +4+1):
-            for q in range(-4, +4+1):
+        for r in range(-4, +4 + 1):
+            for q in range(-4, +4 + 1):
                 if RoPaSciState.within_board((r, q)):
                     result.append((r, q))
         return result
@@ -159,7 +160,7 @@ class RoPaSciState(object):
 
     @staticmethod
     def neighbour_hexes(coords):
-        r,q = coords
+        r, q = coords
         return [(r + r_move, q + q_move) for (r_move, q_move) in DIRECTIONS]
 
     def is_blocked(self, b):
@@ -184,7 +185,7 @@ class RoPaSciState(object):
 
     def apply_move(self, a, b, token):
         """
-        Moves a token from hex a> hex b in the game dictionary.
+        Moves a token from hex a > hex b in the game dictionary.
         Does not check if such move is legal.
         Returns a new RoPaSciState object
         """
@@ -207,7 +208,7 @@ class RoPaSciState(object):
         # r, q = a
         # checks neighbouring hexes and if a slide is legal
         for neighbour in self.neighbour_hexes((r, q)):
-            if self.is_legal_slide((r, q) , neighbour):
+            if self.is_legal_slide((r, q), neighbour):
                 result.append(neighbour)
 
         # todo swing checking shoey'
@@ -236,8 +237,8 @@ class RoPaSciState(object):
         pass
 
     def heuristic(self):
-        # Cost Function: Each existing enemy token "costs" 20
         pass
+
 
 ## Move
 # Given piece position, move from hex 1 to 2
