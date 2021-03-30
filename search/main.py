@@ -127,4 +127,4 @@ def main(filename):
     else:
         print("unable to find solution")
 
-main('test.json')
+main('test3.json')
