@@ -2,6 +2,7 @@
 
 import sys
 
+
 class MinHeap:
     """
     A class to hold a MinHeap data structure to utilise as a priority queue.
@@ -18,19 +19,22 @@ class MinHeap:
     # Function to return the position of
     # parent for the node currently
     # at pos
-    def parent(self, pos):
+    @staticmethod
+    def parent(pos):
         return pos // 2
 
     # Function to return the position of
     # the left child for the node currently
     # at pos
-    def leftChild(self, pos):
+    @staticmethod
+    def leftChild(pos):
         return 2 * pos
 
     # Function to return the position of
     # the right child for the node currently
     # at pos
-    def rightChild(self, pos):
+    @staticmethod
+    def rightChild(pos):
         return (2 * pos) + 1
 
     # Function that returns true if the passed
@@ -107,7 +111,7 @@ class MinHeap:
             return None
         return popped
 
-    def empty(self):
+    def is_empty(self):
         return self.Heap[self.FRONT] == 0
 
 class test(object):
