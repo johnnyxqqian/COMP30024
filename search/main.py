@@ -51,7 +51,7 @@ def main(filename):
     seen_boards = []
 
     # While priority queue is not empty
-    while not queue.empty():
+    while not queue.is_empty():
 
         # pop min priority queue board state
         state = queue.remove()
@@ -70,6 +70,7 @@ def main(filename):
                 # apply move to RoPaSci object
                 # store move in RoPaSci object history
             # after all moves applied, call resolve_battles
+            # state.update_cost()
             # seen_boards.append(state.board)
             #queue.insert(RoPaSci)
 

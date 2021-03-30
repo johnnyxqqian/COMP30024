@@ -184,6 +184,9 @@ class RoPaSciState(object):
         r, q = coords
         return [(r + r_move, q + q_move) for (r_move, q_move) in DIRECTIONS]
 
+    def update_cost(self):
+        self.cost = self.heuristic()
+
     def is_blocked(self, b):
         if BLOCKED in self.board[b]:
             return True
@@ -272,7 +275,7 @@ class RoPaSciState(object):
             # calculate distance to every other ENEMY token our token can beat
         # return sum of distances
 
-        result += 
+        result +=
 
         
 
