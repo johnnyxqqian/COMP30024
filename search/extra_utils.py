@@ -171,7 +171,7 @@ class RoPaSciState(object):
             return tokens
 
         # more than 1 token in which case we determine the winning token
-        winning_token = list(token_set)[0] if RPS_OUTCOMES(list(token_set)[0], list(token_set)[1]) else list(token_set)[1]
+        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
         
         for token in tokens:
             if (token == winning_token) or (token == winning_token.upper()):
@@ -266,7 +266,7 @@ class RoPaSciState(object):
                 dist = self.hex_distance((r,q), (target_r, target_q))
                 
                 # checking if our token can beat the enemy token and the distance has reduced
-                if RPS_OUTCOMES(token, target_t) and dist < least_dist:
+                if RPS_OUTCOMES[token.lower(), target_t.lower()] and dist < least_dist:
                     least_dist = dist
                     distances.append(dist)
                     break
@@ -274,7 +274,6 @@ class RoPaSciState(object):
             distances.append(least_dist)
 
         return (cost - distances.sum())
-
 
         # for each our token:
             # calculate distance to every other ENEMY token
@@ -285,8 +284,6 @@ class RoPaSciState(object):
         # for each of our tokens:
             # calculate distance to every other ENEMY token our token can beat
         # return sum of distances
-
-        
 
 
 ## Move
