@@ -8,7 +8,7 @@ Xue Qiang Qian
 """
 
 from search.swing import *
-
+from search.init import *
 
 class RoPaSciState(object):
 
@@ -327,4 +327,3 @@ board = {(0, 0): ['R'],
 game = RoPaSciState(board=board)
 
 print("DEBUG")
-from heapq import heappush, heappop, heapify
