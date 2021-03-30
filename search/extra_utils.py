@@ -249,17 +249,31 @@ class RoPaSciState(object):
             self._update(coords, survivors)
 
     def heuristic(self):
-        result = 0
 
+        cost = ENEMY_TOKEN_COST * len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
+        distances = []
+
+        # iterating over upper tokens
         for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
 
-            distances = []
-            for key in self.board.keys():
-                if self.board[key] in LOWER_TILES:
-                    distances.append(self.hex_distance((r,q), self.board[key]))
+            least_dist = MAX_DIST
+                
+            # iterating over enemy tokens
+            for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):                        
+                
+                # increase cost to account for prioritisation of eating enemy tokens
+                cost += 100
+                dist = self.hex_distance((r,q), (target_r, target_q))
+                
+                # checking if our token can beat the enemy token and the distance has reduced
+                if RPS_OUTCOMES(token, target_t) and dist < least_dist:
+                    least_dist = dist
+                    distances.append(dist)
+                    break
+                
+            distances.append(least_dist)
 
-        # add 10 to heuristic for each lower token that exists
-        pass
+        return (cost - distances.sum())
 
 
         # for each our token:
@@ -271,8 +285,6 @@ class RoPaSciState(object):
         # for each of our tokens:
             # calculate distance to every other ENEMY token our token can beat
         # return sum of distances
-
-        result += 
 
         
 
