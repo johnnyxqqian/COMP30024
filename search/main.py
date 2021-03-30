@@ -50,6 +50,8 @@ def main(filename):
     # seen states:
     seen_boards = []
 
+    state = None
+
     # While priority queue is not empty
     while not queue.is_empty():
 
@@ -59,8 +61,13 @@ def main(filename):
         if state.board in seen_boards:
             continue
 
-        # if solution found
-            # return solution
+        if state.is_lost():
+            continue
+
+        if state.is_solved():
+            break
+
+        for
 
         # for each token
             # list all token possible moves
