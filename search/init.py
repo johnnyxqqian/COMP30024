@@ -16,6 +16,18 @@ BLOCKED = ""
 COORD_Q_INDEX = 1
 COORD_R_INDEX = 0
 
+BEATS = {
+    ROCK: SCISSORS,
+    SCISSORS: PAPER,
+    PAPER: ROCK
+}
+
+BEATEN_BY = {
+    SCISSORS: ROCK,
+    ROCK: PAPER,
+    PAPER: SCISSORS
+}
+
 LOWER_TILES = ["r", "p", "s"]
 UPPER_TILES = ["R", "P", "S"]
 

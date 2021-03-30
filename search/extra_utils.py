@@ -9,12 +9,37 @@ Xue Qiang Qian
 
 from search.swing import *
 
+
 class RoPaSciState(object):
 
     def __init__(self, board={}, turn=0):
         self.board = board
         self.turn = turn
         self.cost = self.heuristic()
+
+    def is_solved(self):
+        return len(self.board_dict_to_iterable(self.list_lower_tokens())) == 0
+
+    def is_lost(self):
+        # a board state is lost if enemy tokens are unbeatable.
+        # for enemy token, append token to a set
+        upper_tokens = []
+        lower_tokens = []
+
+        for t, r, q in self.board_dict_to_iterable(self.list_lower_tokens()):
+            lower_tokens.append(t)
+
+        for t, r, q in self.board_dict_to_iterable(self.list_upper_tokens()):
+            upper_tokens.append(t)
+        lower_tokens = set(lower_tokens)
+
+        for unique_token in lower_tokens:
+            if BEATEN_BY[unique_token] not in upper_tokens:
+                return True
+
+        return False
+
+        # checks if for every unique enemy token type, there is the corresponding token on the other team
 
     # Game board related functions
     def initialise(self, data):
@@ -163,7 +188,7 @@ class RoPaSciState(object):
         token_set = set(tokens.lower())
 
         # all 3 tokens in which case all destroyed
-        if(len(token_set) == len(LOWER_TILES)):
+        if (len(token_set) == len(LOWER_TILES)):
             return 0
 
         # only 1 token
@@ -171,6 +196,7 @@ class RoPaSciState(object):
             return tokens
 
         # more than 1 token in which case we determine the winning token
+
         winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
         
         for token in tokens:
@@ -183,6 +209,9 @@ class RoPaSciState(object):
     def neighbour_hexes(coords):
         r, q = coords
         return [(r + r_move, q + q_move) for (r_move, q_move) in DIRECTIONS]
+
+    def update_cost(self):
+        self.cost = self.heuristic()
 
     def is_blocked(self, b):
         if BLOCKED in self.board[b]:
@@ -228,8 +257,8 @@ class RoPaSciState(object):
         result = []
         # r, q = a
         # checks neighbouring hexes and if a slide is legal
-        for neighbour in self.neighbour_hexes((r, q)):
-            if self.is_legal_slide((r, q), neighbour):
+        for neighbour in self.neighbour_hexes(base_hex):
+            if self.is_legal_slide(base_hex, neighbour):
                 result.append(neighbour)
 
         neighbours = self.return_neighbouring_hexes(base_hex)
@@ -256,32 +285,35 @@ class RoPaSciState(object):
         # iterating over upper tokens
         for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
 
-            least_dist = MAX_DIST
-                
+            least_dist = MAX_DIST + 1
+
             # iterating over enemy tokens
-            for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):                        
-                
+            for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):
+
                 # increase cost to account for prioritisation of eating enemy tokens
+
                 dist = self.hex_distance((r,q), (target_r, target_q))
                 
                 # checking if our token can beat the enemy token and the distance has reduced
                 if RPS_OUTCOMES[token.lower(), target_t.lower()] and dist < least_dist:
+
                     least_dist = dist
                     distances.append(dist)
                     break
-                
+
             distances.append(least_dist)
 
         return (lower_token_cost - distances.sum())
 
+
         # for each our token:
-            # calculate distance to every other ENEMY token
+        # calculate distance to every other ENEMY token
         # for each of our tokens that can beat an enemy token (i.e. max(#lowerTokens))
-            # have each token move closer to its assigned enemy token based off next least distance
-                # if move involves suicide -> go next best / ignore this move
-            
+        # have each token move closer to its assigned enemy token based off next least distance
+        # if move involves suicide -> go next best / ignore this move
+
         # for each of our tokens:
-            # calculate distance to every other ENEMY token our token can beat
+        # calculate distance to every other ENEMY token our token can beat
         # return sum of distances
 
 
@@ -292,13 +324,9 @@ class RoPaSciState(object):
 # Token is "R", "P", "S", "r", "p", "s"
 
 ### TODO:
+board = {(0, 0): ['R'],
+         (0, 1): ['s']}
+game = RoPaSciState(board=board)
 
-
+print("DEBUG")
 from heapq import heappush, heappop, heapify
-
-
-
-
-
-
-
