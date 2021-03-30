@@ -249,10 +249,33 @@ class RoPaSciState(object):
 
     def heuristic(self):
         result = 0
-        for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
 
+        for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
+            distances = []
+            for key in self.board.keys():
+                if self.board[key] in LOWER_TILES:
+                    distances.append(self.hex_distance((r,q), self.board[key]))
+
+
+
+        
         # add 10 to heuristic for each lower token that exists
         pass
+
+
+        # for each our token:
+            # calculate distance to every other ENEMY token
+        # for each of our tokens that can beat an enemy token (i.e. max(#lowerTokens))
+            # have each token move closer to its assigned enemy token based off next least distance
+                # if move involves suicide -> go next best / ignore this move
+            
+        # for each of our tokens:
+            # calculate distance to every other ENEMY token our token can beat
+        # return sum of distances
+
+        result += 
+
+        
 
 
 ## Move
