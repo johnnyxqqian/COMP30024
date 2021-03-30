@@ -9,6 +9,9 @@ This script contains the entry point to the program (the code in
 import sys
 import json
 from search.extra_utils import *
+from search.minHeap import *
+from search.init import *
+
 # If you want to separate your code into separate files, put them
 # inside the `search` directory (like this one and `util.py`) and
 # then import from them like this:
@@ -33,32 +36,48 @@ def main(filename):
         sys.exit(1)
 
     # initialise game object
-    game = RoPaSci()
+    game = RoPaSciState()
 
     # load the initial game state into the object
     game.initialise(data=data)
 
-    #
-    # Pseudo-ish code
-    # initialise priority queue
-    # input board state into search problem
-    # while priority queue is not empty:
+    # initialise our priority queue in the form of a minheap
+    queue = MinHeap(MAX_HEAP_SIZE)
+
+    # insert initial board state into search problem
+    queue.insert(game)
+
+    # seen states:
+    seen_boards = []
+
+    # While priority queue is not empty
+    while not queue.empty():
+
         # pop min priority queue board state
+        state = queue.remove()
+
+        if state.board in seen_boards:
+            continue
+
+        # if solution found
+            # return solution
+
         # for each token
             # list all token possible moves
-        # take
-    # output each possible move, and corresponding heuristic cost
-    # combine individual token moves into single moves
-    # insert into priority queue
 
-    # HEURISTIC:
-    # Each token "costs" 10
+        # for each combinatoric of possible moves
+            # for each move in the combinatoric
+                # apply move to RoPaSci object
+                # store move in RoPaSci object history
+            # after all moves applied, call resolve_battles
+            # seen_boards.append(state.board)
+            #queue.insert(RoPaSci)
 
-    # TODO:
-    # Find and print a solution to the board configuration described
-    # by `data`.
-    # Why not start by trying to print this configuration out using the
-    # `print_board` helper function? (See the `util.py` source code for
-    # usage information).
+    # if solution found:
+        # for move (move in form of hex a, hex b)
+        # if move distance is greater than 1:
+            # use print swing function
+        # else
+            # use print slide function
 
 main('test.json')

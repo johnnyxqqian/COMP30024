@@ -14,6 +14,7 @@ class RoPaSciState(object):
     def __init__(self, board={}, turn=0):
         self.board = board
         self.turn = turn
+        self.cost = self.heuristic()
 
     # Game board related functions
     def initialise(self, data):
@@ -251,14 +252,12 @@ class RoPaSciState(object):
         result = 0
 
         for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
+
             distances = []
             for key in self.board.keys():
                 if self.board[key] in LOWER_TILES:
                     distances.append(self.hex_distance((r,q), self.board[key]))
 
-
-
-        
         # add 10 to heuristic for each lower token that exists
         pass
 
@@ -290,41 +289,8 @@ class RoPaSciState(object):
 from heapq import heappush, heappop, heapify
 
 
-# Todo
-# add credit for this code
-# Convert this class to account for board state and their cost values
-# A class for Min Heap
-class MinHeap:
 
-    # Constructor to initialize a heap
-    def __init__(self):
-        self.heap = []
 
-    def parent(self, i):
-        return (i - 1) / 2
 
-    # Inserts a new key 'k'
-    def insertKey(self, k):
-        heappush(self.heap, k)
 
-        # Decrease value of key at index 'i' to new_val
 
-    # It is assumed that new_val is smaller than heap[i]
-    def decreaseKey(self, i, new_val):
-        self.heap[i] = new_val
-        while (i != 0 and self.heap[self.parent(i)] > self.heap[i]):
-            # Swap heap[i] with heap[parent(i)]
-            self.heap[i], self.heap[self.parent(i)] = (
-                self.heap[self.parent(i)], self.heap[i])
-
-    # Method to remove minium element from min heap
-    def extractMin(self):
-        return heappop(self.heap)
-
-    # This functon deletes key at index i. It first reduces
-    # value to minus infinite and then calls extractMin()
-    def deleteKey(self, i):
-        self.decreaseKey(i, float("-inf"))
-        self.extractMin()
-
-### Win/Lose Condition State Checking
