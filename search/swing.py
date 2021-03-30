@@ -33,14 +33,15 @@ def swingable_hex_check(current_hex, board, neighbours):
     for hex in neighbours:
 
         # if not a block hex
-        if(board[hex] in UPPER_TILES):
-            swing_hexs.append(hex)
+        if hex in board.keys():
+            if(board[hex] in UPPER_TILES):
+                swing_hexs.append(hex)
 
-            # list of 3-tuples, order is same as swing_hexs so we can trace them
-            for hex in (target_hex_coordinates(current_hex, hex)):
-                target_hexs.append(hex)
+                # list of 3-tuples, order is same as swing_hexs so we can trace them
+                for hex in (target_hex_coordinates(current_hex, hex)):
+                    target_hexs.append(hex)
 
-            # target_hexs.append(target_hex_coordinates(current_hex, hex))
+                # target_hexs.append(target_hex_coordinates(current_hex, hex))
             
     return target_hexs
     
