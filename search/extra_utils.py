@@ -185,8 +185,7 @@ class RoPaSciState(object):
         survivors = []
 
         # to determine which tokens are on the board
-        tokens = [t.lower() for t in tokens]
-        token_set = set(tokens)
+        token_set = set([t.lower() for t in tokens])
 
         # all 3 tokens in which case all destroyed
         if (len(token_set) == len(LOWER_TILES)):
