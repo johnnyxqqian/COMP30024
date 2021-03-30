@@ -13,7 +13,7 @@ class MinHeap:
         self.maxsize = maxsize
         self.size = 0
         self.Heap = [0] * (self.maxsize + 1)
-        self.Heap[0] = -1 * sys.maxsize
+        self.Heap[0] = test(-1 * sys.maxsize)
         self.FRONT = 1
 
     # Function to return the position of
@@ -40,6 +40,8 @@ class MinHeap:
     # Function that returns true if the passed
     # node is a leaf node
     def isLeaf(self, pos):
+        if pos == self.size == 1:
+            return True
         if pos >= (self.size // 2) and pos <= self.size:
             return True
         return False
@@ -102,17 +104,17 @@ class MinHeap:
     # Function to remove and return the minimum
     # element from the heap
     def remove(self):
-
         popped = self.Heap[self.FRONT]
         self.Heap[self.FRONT] = self.Heap[self.size]
         self.size -= 1
+
+        if self.size == 0:
+            return popped
         self.minHeapify(self.FRONT)
-        if popped == 0:
-            return None
         return popped
 
     def is_empty(self):
-        return self.Heap[self.FRONT] == 0
+        return self.size == 0
 
 class test(object):
     def __init__(self, value):
