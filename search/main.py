@@ -118,13 +118,15 @@ def main(filename):
             base_hex, target_hex, token, turn = move
 
             if state.hex_distance(base_hex, target_hex) == 2:
-                print_swing(token, *base_hex, *target_hex)
+                print("# Token: ", token)
+                print_swing(turn, *base_hex, *target_hex)
             elif state.hex_distance(base_hex, target_hex) == 1:
-                print_slide(token, *base_hex, *target_hex)
+                print("# Token: ", token)
+                print_slide(turn, *base_hex, *target_hex)
             else:
                 print("something has gone wrong")
 
     else:
         print("unable to find solution")
 
-main('test3.json')
+main('test.json')
