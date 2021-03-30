@@ -46,6 +46,16 @@ class RoPaSciState(object):
         if self.board[coords] == []:
             del self.board[coords]
 
+    def _update(self, coords, tokens):
+        """
+        updates the tokens on a given coordinate on RoPaSciState dictionary.
+        If given list of tokens is an empty list, deletes the entry from the dictionary
+        """
+        if tokens == []:
+            del self.board[coords]
+        else:
+            self.board[coords] = tokens
+
     def list_upper_tokens(self):
         """
         returns a dictionary with coordinates as the key, and a list of tokens as the value for upper team
@@ -72,6 +82,22 @@ class RoPaSciState(object):
                         result[coords].append(t)
                     else:
                         result[coords] = [t]
+        return result
+
+    @staticmethod
+    def board_dict_to_iterable(board_dict):
+        """
+        Given a RoPaSci Board dict, converts it into an iterable in the form of a tuple.
+        Result is of the form (t, r, q) where:
+        t: token in character format
+        r: axial row
+        q: axial column
+        """
+        result = []
+        for coords, tokens in board_dict.items():
+            r, q = coords
+            for token in tokens:
+                result.append((token, r, q))
         return result
 
     # Hex and movement related functions
@@ -149,7 +175,7 @@ class RoPaSciState(object):
         for token in tokens:
             if (token == winning_token) or (token == winning_token.upper()):
                 survivors.append(token)
-            
+
         return survivors
 
     @staticmethod
@@ -181,7 +207,6 @@ class RoPaSciState(object):
         """
         Moves a token from hex a > hex b in the game dictionary.
         Does not check if such move is legal.
-        Returns a new RoPaSciState object
         """
         self._remove(a, token)
         self._insert(b, token)
@@ -190,6 +215,7 @@ class RoPaSciState(object):
         new_state = RoPaSciState(board=self.board, turn=self.turn + 1)
         for a, b, t in moves:
             new_state.apply_move(a, b, t)
+        new_state.resolve_battles()
         return new_state
 
     def list_legal_moves(self, base_hex):
@@ -205,32 +231,27 @@ class RoPaSciState(object):
             if self.is_legal_slide((r, q), neighbour):
                 result.append(neighbour)
 
-        # todo swing checking shoey'
-
-        
         neighbours = self.return_neighbouring_hexes(base_hex)
         for hex in swingable_hex_check(base_hex, self.board, neighbours):
             if self.within_board(hex) and not self.is_blocked(hex):
                 result.append(hex)
-
-        
 
         return tuple(result)
 
     def resolve_battles(self):
         """
         Looks at board state and calls play_rps on all hexes which have two or more tokens on them
-
         """
-        survivors = []
-
-        for keys in self.board.keys():
-            if self.board[keys].length>1:
-                survivors.append(self.play_rps(self.board[keys]))
-
-        pass
+        for coords, tokens in self.board.items():
+            if len(tokens) > 1:
+                survivors = self.play_rps(tokens)
+            self._update(coords, survivors)
 
     def heuristic(self):
+        result = 0
+        for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
+
+        # add 10 to heuristic for each lower token that exists
         pass
 
 
