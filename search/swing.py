@@ -2,11 +2,9 @@
 # token
 # move #
 
-import numpy
 from search.init import *
 
 
-from numpy.lib.stride_tricks import as_strided
 # dictionary for RPS outcomes
 RPS_OUTCOMES = {
     (ROCK, PAPER): False,
