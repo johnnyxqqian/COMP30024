@@ -84,6 +84,22 @@ class RoPaSciState(object):
                         result[coords] = [t]
         return result
 
+    @staticmethod
+    def board_dict_to_iterable(board_dict):
+        """
+        Given a RoPaSci Board dict, converts it into an iterable in the form of a tuple.
+        Result is of the form (t, r, q) where:
+        t: token in character format
+        r: axial row
+        q: axial column
+        """
+        result = []
+        for coords, tokens in board_dict.items():
+            r, q = coords
+            for token in tokens:
+                result.append((token, r, q))
+        return result
+
     # Hex and movement related functions
     @staticmethod
     def return_neighbouring_hexes(input_coords):
@@ -232,6 +248,10 @@ class RoPaSciState(object):
             self._update(coords, survivors)
 
     def heuristic(self):
+        result = 0
+        for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
+
+        # add 10 to heuristic for each lower token that exists
         pass
 
 

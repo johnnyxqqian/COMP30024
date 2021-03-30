@@ -43,8 +43,10 @@ def main(filename):
     # initialise priority queue
     # input board state into search problem
     # while priority queue is not empty:
-    # pop min priority queue board state
-    # for each token
+        # pop min priority queue board state
+        # for each token
+            # list all token possible moves
+        # take
     # output each possible move, and corresponding heuristic cost
     # combine individual token moves into single moves
     # insert into priority queue
