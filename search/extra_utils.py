@@ -196,9 +196,9 @@ class RoPaSciState(object):
             return tokens
 
         # more than 1 token in which case we determine the winning token
-        winning_token = list(token_set)[0] if RPS_OUTCOMES(list(token_set)[0], list(token_set)[1]) else list(token_set)[
-            1]
 
+        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
+        
         for token in tokens:
             if (token == winning_token) or (token == winning_token.upper()):
                 survivors.append(token)
@@ -279,7 +279,7 @@ class RoPaSciState(object):
 
     def heuristic(self):
 
-        cost = ENEMY_TOKEN_COST * len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
+        lower_token_cost = ENEMY_TOKEN_COST * len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
         distances = []
 
         # iterating over upper tokens
@@ -291,18 +291,20 @@ class RoPaSciState(object):
             for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):
 
                 # increase cost to account for prioritisation of eating enemy tokens
-                cost += 100
-                dist = self.hex_distance((r, q), (target_r, target_q))
 
+                dist = self.hex_distance((r,q), (target_r, target_q))
+                
                 # checking if our token can beat the enemy token and the distance has reduced
-                if RPS_OUTCOMES[(token, target_t)] and dist < least_dist:
+                if RPS_OUTCOMES[token.lower(), target_t.lower()] and dist < least_dist:
+
                     least_dist = dist
                     distances.append(dist)
                     break
 
             distances.append(least_dist)
 
-        return (cost - distances.sum())
+        return (lower_token_cost - distances.sum())
+
 
         # for each our token:
         # calculate distance to every other ENEMY token
