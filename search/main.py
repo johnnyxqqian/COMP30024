@@ -102,8 +102,6 @@ def main():
         # for each token
             # list all token possible moves
 
-
-
         tokens_moves_list = []
         for t, r, q in state.board_dict_to_iterable(state.list_upper_tokens()):
             token_possible_moves = []

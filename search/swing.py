@@ -1,15 +1,6 @@
-# coordiante (r,q)
-# token
-# move #
+# contains logic related to swing actions
 
-
-# Simon:
 from search.init import *
-
-# Johnny
-# from search.init import Q_INDEX, R_INDEX
-
-#from init import *
 
 def has_friendly_tile(neighbours):
     for tiles in neighbours:
