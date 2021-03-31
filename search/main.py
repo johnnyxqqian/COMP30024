@@ -8,6 +8,8 @@ This script contains the entry point to the program (the code in
 
 import json
 
+# Simons imports
+
 from search.extra_utils import *
 from search.util import *
 from search.minHeap import *
@@ -38,11 +40,14 @@ def main(filename):
         print("usage: python3 -m search path/to/input.json", file=sys.stderr)
         sys.exit(1)
 
+
     # initialise game object
     game = RoPaSciState()
 
     # load the initial game state into the object
     game.initialise(data=data)
+
+    print_board(game.board)
 
     # initialise our priority queue in the form of a minheap
     queue = MinHeap(MAX_HEAP_SIZE)
@@ -66,7 +71,7 @@ def main(filename):
         state = queue.remove()
 
         boards_popped+=1
-        print("popped: ",boards_popped)
+        #print("popped: ",boards_popped)
 
         if state.board in seen_boards:
             continue
@@ -97,15 +102,6 @@ def main(filename):
 
             tokens_moves_list.append(token_possible_moves)
 
-        # for each combinatoric of possible moves
-            # for each move in the combinatoric
-                # apply move to RoPaSci object
-                # store move in RoPaSci object history
-            # after all moves applied, call resolve_battles
-            # state.update_cost()
-            # seen_boards.append(state.board)
-            #queue.insert(RoPaSci)
-
         for moves in product(*tokens_moves_list):
             new_state = deepcopy(state)
             new_state.take_turn(moves)
@@ -120,6 +116,7 @@ def main(filename):
             if state.hex_distance(base_hex, target_hex) == 2:
                 #print("# Token: ", token)
                 print_swing(turn, *base_hex, *target_hex)
+
             elif state.hex_distance(base_hex, target_hex) == 1:
                 #print("# Token: ", token)
                 print_slide(turn, *base_hex, *target_hex)
@@ -128,7 +125,7 @@ def main(filename):
 
         for board in state.board_history:
             print_board(board)
-            time.sleep(2)
+            time.sleep(0.1)
         print_board(state.board)
 
     else:
@@ -137,6 +134,6 @@ def main(filename):
 import time
 
 start = time.time()
-main('test2.json')
+main('test13 - swing 1.json')
 end = time.time()
 print(end - start)
