@@ -1,4 +1,3 @@
-
 SLIDE_DISTANCE = 1
 
 DIRECTIONS = ((1, 0), (1, -1), (0, -1), 
@@ -40,7 +39,11 @@ RPS_OUTCOMES = {
     (SCISSORS, ROCK): False,
 
     (PAPER, SCISSORS): False,
-    (SCISSORS, PAPER): True
+    (SCISSORS, PAPER): True,
+
+    (ROCK, ROCK): True,
+    (PAPER, PAPER): True,
+    (SCISSORS, SCISSORS): True,
 }
 
 

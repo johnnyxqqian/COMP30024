@@ -6,8 +6,8 @@ This script contains the entry point to the program (the code in
 `__main__.py` calls `main()`). Your solution starts here!
 """
 
-import sys
 import json
+
 from search.extra_utils import *
 from search.util import *
 from search.minHeap import *
@@ -15,10 +15,10 @@ from search.init import *
 from itertools import product
 from copy import deepcopy
 
+
 # If you want to separate your code into separate files, put them
 # inside the `search` directory (like this one and `util.py`) and
 # then import from them like this:
-from search.util import print_board, print_slide, print_swing
 
 
 def main(filename):
@@ -118,13 +118,20 @@ def main(filename):
             base_hex, target_hex, token, turn = move
 
             if state.hex_distance(base_hex, target_hex) == 2:
-                print_swing(token, *base_hex, *target_hex)
+                #print("# Token: ", token)
+                print_swing(turn, *base_hex, *target_hex)
             elif state.hex_distance(base_hex, target_hex) == 1:
-                print_slide(token, *base_hex, *target_hex)
+                #print("# Token: ", token)
+                print_slide(turn, *base_hex, *target_hex)
             else:
                 print("something has gone wrong")
 
     else:
         print("unable to find solution")
 
-main('testsimple.json')
+import time
+
+start = time.time()
+main('test2.json')
+end = time.time()
+print(end - start)
