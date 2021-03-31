@@ -1,5 +1,3 @@
-# different heap function
-
 import sys
 
 
@@ -9,6 +7,7 @@ class MinHeap:
     Original code from: https://www.geeksforgeeks.org/min-heap-in-python/
     Edits made to ensure it works with an object with an attribute "Cost" as a float or integer.
     """
+
     def __init__(self, maxsize):
         self.maxsize = maxsize
         self.size = 0
@@ -90,7 +89,7 @@ class MinHeap:
     # Function to print the contents of the heap
     def Print(self):
         for i in range(1, (self.size // 2) + 1):
-            print(" PARENT : " + str(self.Heap[i].cost) + " LEFT CHILD : " +
+            print("# PARENT : " + str(self.Heap[i].cost) + " LEFT CHILD : " +
                   str(self.Heap[2 * i].cost) + " RIGHT CHILD : " +
                   str(self.Heap[2 * i + 1].cost))
 
@@ -116,14 +115,16 @@ class MinHeap:
     def is_empty(self):
         return self.size == 0
 
+
 class test(object):
     def __init__(self, value):
         self.cost = value
 
+
 def unittest():
-    testcases = [test(i) for i in range(0,100,4)]\
-                +[test(i) for i in range(24,30,1)]\
-                +[test(i) for i in range(50,60,3)]
+    testcases = [test(i) for i in range(0, 100, 4)] \
+                + [test(i) for i in range(24, 30, 1)] \
+                + [test(i) for i in range(50, 60, 3)]
 
     queue = MinHeap(100000)
 
@@ -138,7 +139,7 @@ def unittest():
         except:
             flag = False
 
-    print(remove_order)
+    #print(remove_order)
     sorted_remove_order = sorted(remove_order)
 
-    print(sorted_remove_order==remove_order)
+    #print(sorted_remove_order == remove_order)

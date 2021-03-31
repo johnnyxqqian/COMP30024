@@ -71,27 +71,18 @@ def main():
     seen_boards = []
 
     state = None
-    boards_checked = 0
-    boards_popped = 0
+
     # While priority queue is not empty
     while not queue.is_empty():
 
-        ## KEEP WHILE PROGRAMMING TO HELP AUTOFINISH
-        #state = RoPaSciState()
 
         # pop min priority queue board state
         state = queue.remove()
-
-        boards_popped+=1
-        #print("popped: ",boards_popped)
 
         if state.board in seen_boards:
             continue
 
         seen_boards.append(state.board)
-
-        boards_checked += 1
-        #print("checked: ",boards_checked)
 
         if state.is_lost():
             continue
@@ -124,15 +115,14 @@ def main():
             # move in the form (hex1, hex2, token, turn number)
             base_hex, target_hex, token, turn = move
 
+            # Filter into swings and slides
             if state.hex_distance(base_hex, target_hex) == 2:
-                #print("# Token: ", token)
+                # print("# Token: ", token)
                 print_swing(turn, *base_hex, *target_hex)
 
             elif state.hex_distance(base_hex, target_hex) == 1:
-                #print("# Token: ", token)
+                # print("# Token: ", token)
                 print_slide(turn, *base_hex, *target_hex)
-            else:
-                print("something has gone wrong")
 
         #for board in state.board_history:
         #    print_board(board)
@@ -140,8 +130,8 @@ def main():
         print_board(state.board)
 
     else:
-        print("unable to find solution")
+        print("# unable to find solution")
 
     end = time.time()
-    print("Search completed in time: ", round(end - start, 2), " seconds")
+    print("# Search completed in time: ", round(end - start, 2), " seconds")
 
