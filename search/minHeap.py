@@ -2,6 +2,7 @@
 
 import sys
 
+
 class MinHeap:
     """
     A class to hold a MinHeap data structure to utilise as a priority queue.
@@ -12,30 +13,35 @@ class MinHeap:
         self.maxsize = maxsize
         self.size = 0
         self.Heap = [0] * (self.maxsize + 1)
-        self.Heap[0] = -1 * sys.maxsize
+        self.Heap[0] = test(-1 * sys.maxsize)
         self.FRONT = 1
 
     # Function to return the position of
     # parent for the node currently
     # at pos
-    def parent(self, pos):
+    @staticmethod
+    def parent(pos):
         return pos // 2
 
     # Function to return the position of
     # the left child for the node currently
     # at pos
-    def leftChild(self, pos):
+    @staticmethod
+    def leftChild(pos):
         return 2 * pos
 
     # Function to return the position of
     # the right child for the node currently
     # at pos
-    def rightChild(self, pos):
+    @staticmethod
+    def rightChild(pos):
         return (2 * pos) + 1
 
     # Function that returns true if the passed
     # node is a leaf node
     def isLeaf(self, pos):
+        if pos == self.size == 1:
+            return True
         if pos >= (self.size // 2) and pos <= self.size:
             return True
         return False
@@ -98,17 +104,17 @@ class MinHeap:
     # Function to remove and return the minimum
     # element from the heap
     def remove(self):
-
         popped = self.Heap[self.FRONT]
         self.Heap[self.FRONT] = self.Heap[self.size]
         self.size -= 1
+
+        if self.size == 0:
+            return popped
         self.minHeapify(self.FRONT)
-        if popped == 0:
-            return None
         return popped
 
-    def empty(self):
-        return self.Heap[self.FRONT] == 0
+    def is_empty(self):
+        return self.size == 0
 
 class test(object):
     def __init__(self, value):

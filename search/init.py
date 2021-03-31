@@ -1,4 +1,3 @@
-
 SLIDE_DISTANCE = 1
 
 DIRECTIONS = ((1, 0), (1, -1), (0, -1), 
@@ -16,6 +15,18 @@ BLOCKED = ""
 COORD_Q_INDEX = 1
 COORD_R_INDEX = 0
 
+BEATS = {
+    ROCK: SCISSORS,
+    SCISSORS: PAPER,
+    PAPER: ROCK
+}
+
+BEATEN_BY = {
+    SCISSORS: ROCK,
+    ROCK: PAPER,
+    PAPER: SCISSORS
+}
+
 LOWER_TILES = ["r", "p", "s"]
 UPPER_TILES = ["R", "P", "S"]
 
@@ -28,7 +39,11 @@ RPS_OUTCOMES = {
     (SCISSORS, ROCK): False,
 
     (PAPER, SCISSORS): False,
-    (SCISSORS, PAPER): True
+    (SCISSORS, PAPER): True,
+
+    (ROCK, ROCK): True,
+    (PAPER, PAPER): True,
+    (SCISSORS, SCISSORS): True,
 }
 
 

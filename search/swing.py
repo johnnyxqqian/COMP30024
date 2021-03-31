@@ -33,14 +33,15 @@ def swingable_hex_check(current_hex, board, neighbours):
     for hex in neighbours:
 
         # if not a block hex
-        if(board[hex] in UPPER_TILES):
-            swing_hexs.append(hex)
+        if hex in board.keys():
+            if(board[hex] in UPPER_TILES):
+                swing_hexs.append(hex)
 
-            # list of 3-tuples, order is same as swing_hexs so we can trace them
-            for hex in (target_hex_coordinates(current_hex, hex)):
-                target_hexs.append(hex)
+                # list of 3-tuples, order is same as swing_hexs so we can trace them
+                for hex in (target_hex_coordinates(current_hex, hex)):
+                    target_hexs.append(hex)
 
-            # target_hexs.append(target_hex_coordinates(current_hex, hex))
+                # target_hexs.append(target_hex_coordinates(current_hex, hex))
             
     return target_hexs
     
@@ -64,42 +65,42 @@ def target_hex_coordinates(base_hex, target_hex):
     
 
 # checks if we should move to a hex based off game rules (assumes move is valid as per Simon's definition)
-def target_hex_check(base_hex, target_hex, game_state_dict):
-    enemy_hex = False
-    pieces_on_hex= set()
+# def target_hex_check(base_hex, target_hex, game_state_dict):
+#     enemy_hex = False
+#     pieces_on_hex= set()
 
-    # check if empty hex
-    if game_state_dict[(target_hex[COORD_Q_INDEX], target_hex[COORD_R_INDEX])]:
-        hex = game_state_dict[(target_hex[COORD_Q_INDEX], target_hex[COORD_R_INDEX])]
-    else:
-        return True
+#     # check if empty hex
+#     if game_state_dict[(target_hex[COORD_Q_INDEX], target_hex[COORD_R_INDEX])]:
+#         hex = game_state_dict[(target_hex[COORD_Q_INDEX], target_hex[COORD_R_INDEX])]
+#     else:
+#         return True
 
-    # blocked
-    if hex[T_INDEX]==BLOCKED:
-        return False
+#     # blocked
+#     if hex[T_INDEX]==BLOCKED:
+#         return False
 
-    # hex not empty
-    if len(hex[T_INDEX]) >=1:
+#     # hex not empty
+#     if len(hex[T_INDEX]) >=1:
 
-        # storing symbols to check
-        for i in range(len(hex[0])):
+#         # storing symbols to check
+#         for i in range(len(hex[0])):
             
-            # case sensitive in case of friendly tokens
-            pieces_on_hex.add(hex[0])
+#             # case sensitive in case of friendly tokens
+#             pieces_on_hex.add(hex[0])
             
-            # occupied by enemy
-            if hex[T_INDEX] in LOWER_TILES:
-                enemy_hex = True
+#             # occupied by enemy
+#             if hex[T_INDEX] in LOWER_TILES:
+#                 enemy_hex = True
 
-                # if enemy hex and we lose, we don't move
-                if not RPS_OUTCOMES(base_hex[T_INDEX], hex[0]):
-                    return False
+#                 # if enemy hex and we lose, we don't move
+#                 if not RPS_OUTCOMES(base_hex[T_INDEX], hex[0]):
+#                     return False
 
-        # >1 token with same symbol, if we move here everyone is destroyed 
-        # need to update in case of friendly fire
+#         # >1 token with same symbol, if we move here everyone is destroyed 
+#         # need to update in case of friendly fire
 
-        # if (len(hex[0])>=2) and (base_hex[T_INDEX] not in pieces_on_hex):
-        #     return False
+#         # if (len(hex[0])>=2) and (base_hex[T_INDEX] not in pieces_on_hex):
+#         #     return False
 
-    return True
+#     return True
 

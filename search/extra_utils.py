@@ -8,6 +8,10 @@ Xue Qiang Qian
 """
 
 from search.swing import *
+from search.init import *
+from search.util import *
+from copy import copy
+
 
 class RoPaSciState(object):
 
@@ -15,6 +19,31 @@ class RoPaSciState(object):
         self.board = board
         self.turn = turn
         self.cost = self.heuristic()
+        self.move_history = []
+
+    def is_solved(self):
+        return len(self.board_dict_to_iterable(self.list_lower_tokens())) == 0
+
+    def is_lost(self):
+        # a board state is lost if enemy tokens are unbeatable.
+        # for enemy token, append token to a set
+        upper_tokens = []
+        lower_tokens = []
+
+        for t, r, q in self.board_dict_to_iterable(self.list_lower_tokens()):
+            lower_tokens.append(t)
+
+        for t, r, q in self.board_dict_to_iterable(self.list_upper_tokens()):
+            upper_tokens.append(t.lower())
+        lower_tokens = set(lower_tokens)
+
+        for unique_token in lower_tokens:
+            if BEATEN_BY[unique_token] not in upper_tokens:
+                return True
+
+        return False
+
+        # checks if for every unique enemy token type, there is the corresponding token on the other team
 
     # Game board related functions
     def initialise(self, data):
@@ -29,6 +58,8 @@ class RoPaSciState(object):
 
         for token, r, q in data['block']:
             self._insert((r, q), token)
+
+        self.update_cost()
 
     def _insert(self, coords, token):
         """
@@ -102,16 +133,6 @@ class RoPaSciState(object):
         return result
 
     # Hex and movement related functions
-    @staticmethod
-    def return_neighbouring_hexes(input_coords):
-        neighbour_hexes = []
-        r_in, q_in = input_coords
-        for direction in DIRECTIONS:
-            r_add, q_add = direction
-            r_new = r_in + r_add
-            q_new = q_in + q_add
-            neighbour_hexes.append((r_new, q_new))
-        return tuple(neighbour_hexes)
 
     @staticmethod
     def axial_to_cube(coords):
@@ -147,9 +168,13 @@ class RoPaSciState(object):
     @staticmethod
     def within_board(coords):
         r, q = coords
-        if abs(r + q) <= 4:
-            return True
-        return False
+        if abs(r + q) > 4:
+            return False
+        if abs(r) > 4:
+            return False
+        if abs(q) > 4:
+            return False
+        return True
 
     @staticmethod
     def play_rps(tokens):
@@ -160,10 +185,11 @@ class RoPaSciState(object):
         survivors = []
 
         # to determine which tokens are on the board
-        token_set = set(tokens.lower())
+        tokens = [t.lower() for t in tokens]
+        token_set = set(tokens)
 
         # all 3 tokens in which case all destroyed
-        if(len(token_set) == len(LOWER_TILES)):
+        if (len(token_set) == len(LOWER_TILES)):
             return 0
 
         # only 1 token
@@ -171,8 +197,10 @@ class RoPaSciState(object):
             return tokens
 
         # more than 1 token in which case we determine the winning token
-        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
-        
+
+        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[
+            1]
+
         for token in tokens:
             if (token == winning_token) or (token == winning_token.upper()):
                 survivors.append(token)
@@ -184,8 +212,11 @@ class RoPaSciState(object):
         r, q = coords
         return [(r + r_move, q + q_move) for (r_move, q_move) in DIRECTIONS]
 
+    def update_cost(self):
+        self.cost = self.heuristic()
+
     def is_blocked(self, b):
-        if BLOCKED in self.board[b]:
+        if b in self.board.keys() and BLOCKED in self.board[b]:
             return True
         return False
 
@@ -196,9 +227,9 @@ class RoPaSciState(object):
         2. The movement is within the board boundaries
         3. The target hex is not blocked
         """
-        if self.hex_distance(a, b) == SLIDE_DISTANCE:
-            return False
         if not self.within_board(b):
+            return False
+        if self.hex_distance(a, b) > SLIDE_DISTANCE:
             return False
         if self.is_blocked(b):
             return False
@@ -213,11 +244,16 @@ class RoPaSciState(object):
         self._insert(b, token)
 
     def take_turn(self, moves):
-        new_state = RoPaSciState(board=self.board, turn=self.turn + 1)
+        """
+        applies the moves, increments the turn, and records all moves.
+        Returns the resulting new board state.
+        """
+        self.turn += 1
         for a, b, t in moves:
-            new_state.apply_move(a, b, t)
-        new_state.resolve_battles()
-        return new_state
+            self.apply_move(a, b, t)
+            self.move_history.append((a, b, t, self.turn))
+        self.resolve_battles()
+        self.update_cost()
 
     def list_legal_moves(self, base_hex):
         """
@@ -228,15 +264,14 @@ class RoPaSciState(object):
         result = []
         # r, q = a
         # checks neighbouring hexes and if a slide is legal
-        for neighbour in self.neighbour_hexes((r, q)):
-            if self.is_legal_slide((r, q), neighbour):
+        for neighbour in self.neighbour_hexes(base_hex):
+            if self.is_legal_slide(base_hex, neighbour):
                 result.append(neighbour)
 
-        neighbours = self.return_neighbouring_hexes(base_hex)
+        neighbours = self.neighbour_hexes(base_hex)
         for hex in swingable_hex_check(base_hex, self.board, neighbours):
             if self.within_board(hex) and not self.is_blocked(hex):
                 result.append(hex)
-
         return tuple(result)
 
     def resolve_battles(self):
@@ -246,7 +281,7 @@ class RoPaSciState(object):
         for coords, tokens in self.board.items():
             if len(tokens) > 1:
                 survivors = self.play_rps(tokens)
-            self._update(coords, survivors)
+                self._update(coords, survivors)
 
     def heuristic(self):
 
@@ -256,31 +291,35 @@ class RoPaSciState(object):
         # iterating over upper tokens
         for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
 
-            least_dist = MAX_DIST
-                
+            least_dist = MAX_DIST + 1
+
             # iterating over enemy tokens
-            for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):                        
-                
+            for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):
+
                 # increase cost to account for prioritisation of eating enemy tokens
-                dist = self.hex_distance((r,q), (target_r, target_q))
-                
+
+                dist = self.hex_distance((r, q), (target_r, target_q))
+
                 # checking if our token can beat the enemy token and the distance has reduced
                 if RPS_OUTCOMES[token.lower(), target_t.lower()] and dist < least_dist:
                     least_dist = dist
-                    break
-                
+                    distances.append(least_dist)
+
+            if least_dist == MAX_DIST + 1:
+                continue
+
             distances.append(least_dist)
 
-        return (lower_token_cost - distances.sum())
+        return (lower_token_cost + sum(distances))
 
         # for each our token:
-            # calculate distance to every other ENEMY token
+        # calculate distance to every other ENEMY token
         # for each of our tokens that can beat an enemy token (i.e. max(#lowerTokens))
-            # have each token move closer to its assigned enemy token based off next least distance
-                # if move involves suicide -> go next best / ignore this move
-            
+        # have each token move closer to its assigned enemy token based off next least distance
+        # if move involves suicide -> go next best / ignore this move
+
         # for each of our tokens:
-            # calculate distance to every other ENEMY token our token can beat
+        # calculate distance to every other ENEMY token our token can beat
         # return sum of distances
 
 
@@ -290,14 +329,12 @@ class RoPaSciState(object):
 # Coordinate template (r, q)
 # Token is "R", "P", "S", "r", "p", "s"
 
-### TODO:
+def unit_test():
+    board = {(1, 2): ['R'],
+             (2, 2): ['P'],
+             (0, 1): ['s']}
+    game = RoPaSciState(board=board)
 
+    print(game.heuristic())
 
-from heapq import heappush, heappop, heapify
-
-
-
-
-
-
-
+    print("DEBUG")

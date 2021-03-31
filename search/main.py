@@ -6,11 +6,13 @@ This script contains the entry point to the program (the code in
 `__main__.py` calls `main()`). Your solution starts here!
 """
 
-import sys
 import json
-from search.extra_utils import *
-from search.minHeap import *
-from search.init import *
+from .extra_utils import *
+from .util import *
+from .minHeap import *
+from .init import *
+from itertools import product
+from copy import deepcopy
 
 # If you want to separate your code into separate files, put them
 # inside the `search` directory (like this one and `util.py`) and
@@ -50,34 +52,78 @@ def main(filename):
     # seen states:
     seen_boards = []
 
+    state = None
+    boards_checked = 0
+    boards_popped = 0
     # While priority queue is not empty
-    while not queue.empty():
+    while not queue.is_empty():
+
+        ## KEEP WHILE PROGRAMMING TO HELP AUTOFINISH
+        #state = RoPaSciState()
 
         # pop min priority queue board state
         state = queue.remove()
 
+        boards_popped+=1
+        print("popped: ",boards_popped)
+
         if state.board in seen_boards:
             continue
 
-        # if solution found
-            # return solution
+        seen_boards.append(state.board)
+
+        boards_checked += 1
+        print("checked: ",boards_checked)
+
+        if state.is_lost():
+            continue
+
+        if state.is_solved():
+            break
 
         # for each token
             # list all token possible moves
+
+
+
+        tokens_moves_list = []
+        for t, r, q in state.board_dict_to_iterable(state.list_upper_tokens()):
+            token_possible_moves = []
+            legal_moves = state.list_legal_moves((r,q))
+            for legal_move in legal_moves:
+                move = ((r,q), legal_move, t)
+                token_possible_moves.append(move)
+
+            tokens_moves_list.append(token_possible_moves)
 
         # for each combinatoric of possible moves
             # for each move in the combinatoric
                 # apply move to RoPaSci object
                 # store move in RoPaSci object history
             # after all moves applied, call resolve_battles
+            # state.update_cost()
             # seen_boards.append(state.board)
             #queue.insert(RoPaSci)
 
-    # if solution found:
-        # for move (move in form of hex a, hex b)
-        # if move distance is greater than 1:
-            # use print swing function
-        # else
-            # use print slide function
+        for moves in product(*tokens_moves_list):
+            new_state = deepcopy(state)
+            new_state.take_turn(moves)
+            queue.insert(new_state)
 
-main('test.json')
+    if state.is_solved():
+        for move in state.move_history:
+
+            # move in the form (hex1, hex2, token, turn number)
+            base_hex, target_hex, token, turn = move
+
+            if state.hex_distance(base_hex, target_hex) == 2:
+                print_swing(token, *base_hex, *target_hex)
+            elif state.hex_distance(base_hex, target_hex) == 1:
+                print_slide(token, *base_hex, *target_hex)
+            else:
+                print("something has gone wrong")
+
+    else:
+        print("unable to find solution")
+
+main('testsimple.json')
