@@ -1,4 +1,6 @@
-from search.main import main
+# from search.main import main
 
-main('test.json')
+from main import main
+
+main('test19 - swing 2.json')
 

@@ -7,10 +7,17 @@ Simon Chen 1003925
 Xue Qiang Qian
 """
 
-from search.swing import *
-from search.init import *
-from search.util import *
+# Simon
+# from search.swing import *
+# from search.init import *
+# from search.util import *
+
 from copy import deepcopy
+
+#Johnny
+from swing import *
+from init import *
+from util import *
 
 
 # import importlib
@@ -284,7 +291,7 @@ class RoPaSciState(object):
             if self.within_board(hex) and not self.is_blocked(hex):
                 result.append(hex)
         
-        return tuple(result)
+        return result
 
     def resolve_battles(self):
         """

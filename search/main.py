@@ -10,12 +10,19 @@ import json
 
 # Simons imports
 
-from search.extra_utils import *
-from search.util import *
-from search.minHeap import *
-from search.init import *
+# from search.extra_utils import *
+# from search.util import *
+# from search.minHeap import *
+# from search.init import *
+
 from itertools import product
 from copy import deepcopy
+
+# Johnnys imports
+from extra_utils import *
+from util import *
+from minHeap import *
+from init import *
 
 
 # If you want to separate your code into separate files, put them
