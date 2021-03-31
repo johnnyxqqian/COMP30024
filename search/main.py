@@ -10,20 +10,21 @@ import json
 
 # Simons imports
 
-# from search.extra_utils import *
-# from search.util import *
-# from search.minHeap import *
-# from search.init import *
+from search.extra_utils import *
+from search.util import *
+from search.minHeap import *
+from search.init import *
 
 from itertools import product
 from copy import deepcopy
 
 # Johnnys imports
+"""
 from extra_utils import *
 from util import *
 from minHeap import *
 from init import *
-
+"""
 
 # If you want to separate your code into separate files, put them
 # inside the `search` directory (like this one and `util.py`) and
@@ -86,7 +87,7 @@ def main(filename):
         seen_boards.append(state.board)
 
         boards_checked += 1
-        print("checked: ",boards_checked)
+        #print("checked: ",boards_checked)
 
         if state.is_lost():
             continue
@@ -115,6 +116,7 @@ def main(filename):
             queue.insert(new_state)
 
     if state.is_solved():
+        print("# Solution Found")
         for move in state.move_history:
 
             # move in the form (hex1, hex2, token, turn number)
@@ -130,9 +132,9 @@ def main(filename):
             else:
                 print("something has gone wrong")
 
-        for board in state.board_history:
-            print_board(board)
-            time.sleep(0.1)
+        #for board in state.board_history:
+        #    print_board(board)
+        #    time.sleep(0.1)
         print_board(state.board)
 
     else:
@@ -141,6 +143,6 @@ def main(filename):
 import time
 
 start = time.time()
-main('test13 - swing 1.json')
+main(f'test24.json')
 end = time.time()
 print(end - start)

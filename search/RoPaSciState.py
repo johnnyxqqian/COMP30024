@@ -2,30 +2,25 @@
 COMP30024 Artificial Intelligence, Semester 1, 2021
 Project Part A: Searching
 
-This module contains self-written helper functions for calculating board states and action legitimacy.
+This module contains a RoPaSci object which contains data about the board
 Simon Chen 1003925
 Xue Qiang Qian
 """
 
 # Simon
-# from search.swing import *
-# from search.init import *
-# from search.util import *
+
+from search.swing import *
+from search.init import *
+from search.util import *
 
 from copy import deepcopy
 
 #Johnny
+"""
 from swing import *
 from init import *
 from util import *
-
-
-# import importlib
-# importlib.import_module("extra_utils")
-# importlib.import_module("util")
-# importlib.import_module("swing")
-# importlib.import_module("minHeap")
-# importlib.import_module("init")
+"""
 
 class RoPaSciState(object):
 
