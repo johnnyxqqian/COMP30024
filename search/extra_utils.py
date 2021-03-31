@@ -10,7 +10,7 @@ Xue Qiang Qian
 from search.swing import *
 from search.init import *
 from search.util import *
-from copy import copy
+from copy import deepcopy
 
 
 # import importlib
@@ -27,6 +27,7 @@ class RoPaSciState(object):
         self.turn = turn
         self.cost = self.heuristic()
         self.move_history = []
+        self.board_history = []
 
     def is_solved(self):
         return len(self.board_dict_to_iterable(self.list_lower_tokens())) == 0
@@ -52,7 +53,7 @@ class RoPaSciState(object):
 
         # checks if for every unique enemy token type, there is the corresponding token on the other team
 
-    # Game board related functions
+    # Game board relatedgit  functions
     def initialise(self, data):
         """
         Function for first initialisation, using the given JSON data object to create the initial state
@@ -115,21 +116,12 @@ class RoPaSciState(object):
         """
         result = {}
         for coords, tokens in self.board.items():
-            # if len(tokens)>1:
-            
             for t in tokens:
                 if t in LOWER_TILES:
                     if coords in result.keys():
                         result[coords].append(t)
                     else:
                         result[coords] = [t]
-            # else:
-            #     if tokens in LOWER_TILES:
-            #         if coords in result.keys():
-            #             result[coords].append(tokens)
-            #         else:
-            #             result[coords] = [tokens]
-                
                 
         return result
 
@@ -214,8 +206,7 @@ class RoPaSciState(object):
 
         # more than 1 token in which case we determine the winning token
 
-        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[
-            1]
+        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
 
         for token in tokens:
             if (token == winning_token) or (token == winning_token.upper()):
@@ -265,6 +256,7 @@ class RoPaSciState(object):
         Returns the resulting new board state.
         """
         self.turn += 1
+        self.board_history.append(deepcopy(self.board))
         for a, b, t in moves:
             self.apply_move(a, b, t)
             self.move_history.append((a, b, t, self.turn))
