@@ -13,6 +13,13 @@ from search.util import *
 from copy import copy
 
 
+# import importlib
+# importlib.import_module("extra_utils")
+# importlib.import_module("util")
+# importlib.import_module("swing")
+# importlib.import_module("minHeap")
+# importlib.import_module("init")
+
 class RoPaSciState(object):
 
     def __init__(self, board={}, turn=0):
@@ -108,12 +115,22 @@ class RoPaSciState(object):
         """
         result = {}
         for coords, tokens in self.board.items():
+            # if len(tokens)>1:
+            
             for t in tokens:
                 if t in LOWER_TILES:
                     if coords in result.keys():
                         result[coords].append(t)
                     else:
                         result[coords] = [t]
+            # else:
+            #     if tokens in LOWER_TILES:
+            #         if coords in result.keys():
+            #             result[coords].append(tokens)
+            #         else:
+            #             result[coords] = [tokens]
+                
+                
         return result
 
     @staticmethod
@@ -189,7 +206,7 @@ class RoPaSciState(object):
 
         # all 3 tokens in which case all destroyed
         if (len(token_set) == len(LOWER_TILES)):
-            return 0
+            return survivors
 
         # only 1 token
         if len(token_set) == 1:
@@ -215,9 +232,8 @@ class RoPaSciState(object):
         self.cost = self.heuristic()
 
     def is_blocked(self, b):
-        if b in self.board.keys():
-            if BLOCKED in self.board[b]:
-                return True
+        if b in self.board.keys() and BLOCKED in self.board[b]:
+            return True
         return False
 
     def is_legal_slide(self, a, b):
@@ -264,14 +280,18 @@ class RoPaSciState(object):
         result = []
         # r, q = a
         # checks neighbouring hexes and if a slide is legal
-        for neighbour in self.neighbour_hexes(base_hex):
+        
+        neighbours = self.neighbour_hexes(base_hex)
+        
+        for neighbour in neighbours:
             if self.is_legal_slide(base_hex, neighbour):
                 result.append(neighbour)
 
-        neighbours = self.neighbour_hexes(base_hex)
+        
         for hex in swingable_hex_check(base_hex, self.board, neighbours):
             if self.within_board(hex) and not self.is_blocked(hex):
                 result.append(hex)
+        
         return tuple(result)
 
     def resolve_battles(self):
@@ -280,6 +300,7 @@ class RoPaSciState(object):
         """
         updates = []
         for coords, tokens in self.board.items():
+            # print("coords = ", coords , "tokens =", tokens)
             if len(tokens) > 1:
                 survivors = self.play_rps(tokens)
                 updates.append((coords, survivors))

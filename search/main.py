@@ -6,8 +6,8 @@ This script contains the entry point to the program (the code in
 `__main__.py` calls `main()`). Your solution starts here!
 """
 
-import sys
 import json
+
 from search.extra_utils import *
 from search.util import *
 from search.minHeap import *
@@ -15,10 +15,10 @@ from search.init import *
 from itertools import product
 from copy import deepcopy
 
+
 # If you want to separate your code into separate files, put them
 # inside the `search` directory (like this one and `util.py`) and
 # then import from them like this:
-from search.util import print_board, print_slide, print_swing
 
 
 def main(filename):
@@ -132,6 +132,6 @@ def main(filename):
 import time
 
 start = time.time()
-main('test3.json')
+main('test2.json')
 end = time.time()
 print(end - start)
