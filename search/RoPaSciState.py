@@ -7,23 +7,14 @@ Simon Chen 1003925
 Xue Qiang Qian 1081725
 """
 
-# Simon
-
 from search.swing import *
 from search.init import *
 from search.util import *
 
 from copy import deepcopy
 
-#Johnny
-"""
-from swing import *
-from init import *
-from util import *
-"""
 
 class RoPaSciState(object):
-
 
     # constructor
     def __init__(self, board={}, turn=0):
@@ -55,7 +46,7 @@ class RoPaSciState(object):
 
         for t, r, q in self.board_dict_to_iterable(self.list_upper_tokens()):
             upper_tokens.append(t.lower())
-       
+
         # determining unique lower tokens
         lower_tokens = set(lower_tokens)
 
@@ -65,8 +56,6 @@ class RoPaSciState(object):
 
         return False
 
-
-    # constructor
     def initialise(self, data):
         """
         Function for first initialisation, using the given JSON data object to create the initial state
@@ -135,7 +124,7 @@ class RoPaSciState(object):
                         result[coords].append(t)
                     else:
                         result[coords] = [t]
-                
+
         return result
 
     @staticmethod
@@ -158,9 +147,10 @@ class RoPaSciState(object):
 
     @staticmethod
     def axial_to_cube(coords):
-        
+
         """ 
-        Takes coordinates in axial form and returns them in cube form
+        Takes coordinates in axial form and returns them in cube form.
+        Function taken from: https://www.redblobgames.com/grids/hexagons/
         """
         # coords in the form of (r,q)
         z, x = coords
@@ -169,9 +159,10 @@ class RoPaSciState(object):
 
     @staticmethod
     def cube_distance(base, target):
-        
+
         """ 
         Returns distance between two coordiantes in cube form
+        Function taken from: https://www.redblobgames.com/grids/hexagons/
         """
         base_x, base_y, base_z = base
         target_x, target_y, target_z = target
@@ -181,6 +172,7 @@ class RoPaSciState(object):
     def hex_distance(base, target):
         """ 
         Returns distance between two coordiantes in hex form
+        Function taken from: https://www.redblobgames.com/grids/hexagons/
         """
         base = RoPaSciState.axial_to_cube(base)
         target = RoPaSciState.axial_to_cube(target)
@@ -224,7 +216,7 @@ class RoPaSciState(object):
         token_set = set([t.lower() for t in tokens])
 
         # all 3 tokens in which case all destroyed
-        if (len(token_set) == len(LOWER_TILES)):
+        if len(token_set) == len(LOWER_TILES):
             return survivors
 
         # only 1 token so no battle occurs
@@ -232,9 +224,8 @@ class RoPaSciState(object):
             return tokens
 
         # more than 1 token in which case we determine the winning token
-
-        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
-
+        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[
+            1]
 
         # recording which tokens win
         for token in tokens:
@@ -307,18 +298,17 @@ class RoPaSciState(object):
         result = []
         # r, q = a
         # checks neighbouring hexes and if a slide is legal
-        
+
         neighbours = self.neighbour_hexes(base_hex)
-        
+
         for neighbour in neighbours:
             if self.is_legal_slide(base_hex, neighbour):
                 result.append(neighbour)
 
-        
         for hex in swingable_hex_check(base_hex, self.board, neighbours):
             if self.within_board(hex) and not self.is_blocked(hex):
                 result.append(hex)
-        
+
         return result
 
     def resolve_battles(self):
@@ -367,13 +357,8 @@ class RoPaSciState(object):
 
             distances.append(min_dist)
 
-        return (lower_token_cost + sum(distances))
+        return lower_token_cost + sum(distances)
 
-## Move
-# Given piece position, move from hex 1 to 2
-
-# Coordinate template (r, q)
-# Token is "R", "P", "S", "r", "p", "s"
 
 def unit_test():
     board = {(1, 2): ['R'],
@@ -381,6 +366,6 @@ def unit_test():
              (0, 1): ['s']}
     game = RoPaSciState(board=board)
 
-    print(game.heuristic())
+    # print(game.heuristic())
 
-    print("DEBUG")
+    # print("DEBUG"

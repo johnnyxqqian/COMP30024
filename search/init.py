@@ -1,15 +1,15 @@
 SLIDE_DISTANCE = 1
 
-DIRECTIONS = ((1, 0), (1, -1), (0, -1), 
-    (-1, 0), (-1, 1), (0, 1),)
+DIRECTIONS = ((1, 0), (1, -1), (0, -1),
+              (-1, 0), (-1, 1), (0, 1),)
 
 NUM_DIRECTIONS = 6
 Q_INDEX = 1
 R_INDEX = 0
 
 ROCK = 'r'
-PAPER ='p'
-SCISSORS ='s'
+PAPER = 'p'
+SCISSORS = 's'
 BLOCKED = ""
 
 COORD_Q_INDEX = 1
@@ -45,7 +45,6 @@ RPS_OUTCOMES = {
     (PAPER, PAPER): True,
     (SCISSORS, SCISSORS): True,
 }
-
 
 MAX_HEAP_SIZE = 1000000
 
