@@ -10,10 +10,12 @@ import json
 
 # Simons imports
 
-from search.extra_utils import *
+from search.RoPaSciState import *
 from search.util import *
 from search.minHeap import *
 from search.init import *
+
+import time
 
 from itertools import product
 from copy import deepcopy
@@ -31,15 +33,15 @@ from init import *
 # then import from them like this:
 
 
-def main(filename):
-    """
+def main():
+
     try:
         with open(sys.argv[1]) as file:
             data = json.load(file)
     except IndexError:
         print("usage: python3 -m search path/to/input.json", file=sys.stderr)
         sys.exit(1)
-    pass
+
     """
     try:
         with open(filename) as file:
@@ -47,7 +49,7 @@ def main(filename):
     except IndexError:
         print("usage: python3 -m search path/to/input.json", file=sys.stderr)
         sys.exit(1)
-
+    """
 
     # initialise game object
     game = RoPaSciState()
@@ -140,9 +142,9 @@ def main(filename):
     else:
         print("unable to find solution")
 
-import time
+def unittest():
 
-start = time.time()
-main(f'test24.json')
-end = time.time()
-print(end - start)
+    start = time.time()
+    main(f'test27.json')
+    end = time.time()
+    print("Search completed in time: ",round(end - start,2), " seconds")
