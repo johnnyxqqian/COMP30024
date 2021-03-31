@@ -267,7 +267,6 @@ class RoPaSciState(object):
                 # checking if our token can beat the enemy token and the distance has reduced
                 if RPS_OUTCOMES[token.lower(), target_t.lower()] and dist < least_dist:
                     least_dist = dist
-                    distances.append(dist)
                     break
                 
             distances.append(least_dist)
