@@ -7,9 +7,9 @@ Simon Chen 1003925
 Xue Qiang Qian
 """
 
-from swing import *
-from init import *
-from util import *
+from search.swing import *
+from search.init import *
+from search.util import *
 from copy import copy
 
 
@@ -193,8 +193,7 @@ class RoPaSciState(object):
         survivors = []
 
         # to determine which tokens are on the board
-        tokens = [t.lower() for t in tokens]
-        token_set = set(tokens)
+        token_set = set([t.lower() for t in tokens])
 
         # all 3 tokens in which case all destroyed
         if (len(token_set) == len(LOWER_TILES)):
@@ -289,11 +288,16 @@ class RoPaSciState(object):
         """
         Looks at board state and calls play_rps on all hexes which have two or more tokens on them
         """
+        updates = []
         for coords, tokens in self.board.items():
             # print("coords = ", coords , "tokens =", tokens)
             if len(tokens) > 1:
                 survivors = self.play_rps(tokens)
-                # print("coords = ", coords, "tokens = ", tokens, "survivors = ", survivors )
+                updates.append((coords, survivors))
+
+        if updates:
+            for update in updates:
+                coords, survivors = update
                 self._update(coords, survivors)
 
     def heuristic(self):

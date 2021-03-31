@@ -8,10 +8,10 @@ This script contains the entry point to the program (the code in
 
 import json
 
-from extra_utils import *
-from util import *
-from minHeap import *
-from init import *
+from search.extra_utils import *
+from search.util import *
+from search.minHeap import *
+from search.init import *
 from itertools import product
 from copy import deepcopy
 
@@ -118,13 +118,20 @@ def main(filename):
             base_hex, target_hex, token, turn = move
 
             if state.hex_distance(base_hex, target_hex) == 2:
-                print_swing(token, *base_hex, *target_hex)
+                #print("# Token: ", token)
+                print_swing(turn, *base_hex, *target_hex)
             elif state.hex_distance(base_hex, target_hex) == 1:
-                print_slide(token, *base_hex, *target_hex)
+                #print("# Token: ", token)
+                print_slide(turn, *base_hex, *target_hex)
             else:
                 print("something has gone wrong")
 
     else:
         print("unable to find solution")
 
-main('testsimple.json')
+import time
+
+start = time.time()
+main('test2.json')
+end = time.time()
+print(end - start)
