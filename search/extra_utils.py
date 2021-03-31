@@ -10,7 +10,7 @@ Xue Qiang Qian
 from search.swing import *
 from search.init import *
 from search.util import *
-from copy import copy
+from copy import deepcopy
 
 
 # import importlib
@@ -27,6 +27,7 @@ class RoPaSciState(object):
         self.turn = turn
         self.cost = self.heuristic()
         self.move_history = []
+        self.board_history = []
 
     def is_solved(self):
         return len(self.board_dict_to_iterable(self.list_lower_tokens())) == 0
@@ -265,6 +266,7 @@ class RoPaSciState(object):
         Returns the resulting new board state.
         """
         self.turn += 1
+        self.board_history.append(deepcopy(self.board))
         for a, b, t in moves:
             self.apply_move(a, b, t)
             self.move_history.append((a, b, t, self.turn))

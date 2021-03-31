@@ -126,6 +126,10 @@ def main(filename):
             else:
                 print("something has gone wrong")
 
+        for board in state.board_history:
+            print_board(board)
+            time.sleep(2)
+
     else:
         print("unable to find solution")
 
