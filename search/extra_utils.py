@@ -53,7 +53,7 @@ class RoPaSciState(object):
 
         # checks if for every unique enemy token type, there is the corresponding token on the other team
 
-    # Game board related functions
+    # Game board relatedgit  functions
     def initialise(self, data):
         """
         Function for first initialisation, using the given JSON data object to create the initial state
@@ -116,21 +116,12 @@ class RoPaSciState(object):
         """
         result = {}
         for coords, tokens in self.board.items():
-            # if len(tokens)>1:
-            
             for t in tokens:
                 if t in LOWER_TILES:
                     if coords in result.keys():
                         result[coords].append(t)
                     else:
                         result[coords] = [t]
-            # else:
-            #     if tokens in LOWER_TILES:
-            #         if coords in result.keys():
-            #             result[coords].append(tokens)
-            #         else:
-            #             result[coords] = [tokens]
-                
                 
         return result
 
@@ -215,8 +206,7 @@ class RoPaSciState(object):
 
         # more than 1 token in which case we determine the winning token
 
-        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[
-            1]
+        winning_token = list(token_set)[0] if RPS_OUTCOMES[list(token_set)[0], list(token_set)[1]] else list(token_set)[1]
 
         for token in tokens:
             if (token == winning_token) or (token == winning_token.upper()):
