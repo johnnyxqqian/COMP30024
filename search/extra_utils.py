@@ -7,11 +7,18 @@ Simon Chen 1003925
 Xue Qiang Qian
 """
 
-from search.swing import *
-from search.init import *
-from search.util import *
+from swing import *
+from init import *
+from util import *
 from copy import copy
 
+
+# import importlib
+# importlib.import_module("extra_utils")
+# importlib.import_module("util")
+# importlib.import_module("swing")
+# importlib.import_module("minHeap")
+# importlib.import_module("init")
 
 class RoPaSciState(object):
 
@@ -108,12 +115,22 @@ class RoPaSciState(object):
         """
         result = {}
         for coords, tokens in self.board.items():
+            # if len(tokens)>1:
+            
             for t in tokens:
                 if t in LOWER_TILES:
                     if coords in result.keys():
                         result[coords].append(t)
                     else:
                         result[coords] = [t]
+            # else:
+            #     if tokens in LOWER_TILES:
+            #         if coords in result.keys():
+            #             result[coords].append(tokens)
+            #         else:
+            #             result[coords] = [tokens]
+                
+                
         return result
 
     @staticmethod
@@ -190,7 +207,7 @@ class RoPaSciState(object):
 
         # all 3 tokens in which case all destroyed
         if (len(token_set) == len(LOWER_TILES)):
-            return 0
+            return survivors
 
         # only 1 token
         if len(token_set) == 1:

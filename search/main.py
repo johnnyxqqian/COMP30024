@@ -7,17 +7,18 @@ This script contains the entry point to the program (the code in
 """
 
 import json
-from .extra_utils import *
-from .util import *
-from .minHeap import *
-from .init import *
+
+from extra_utils import *
+from util import *
+from minHeap import *
+from init import *
 from itertools import product
 from copy import deepcopy
+
 
 # If you want to separate your code into separate files, put them
 # inside the `search` directory (like this one and `util.py`) and
 # then import from them like this:
-from search.util import print_board, print_slide, print_swing
 
 
 def main(filename):

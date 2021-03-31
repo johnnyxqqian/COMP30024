@@ -2,8 +2,10 @@
 # token
 # move #
 
-from search.init import *
 
+# import importlib
+# importlib.import_module("init")
+from init import *
 
 # dictionary for RPS outcomes
 RPS_OUTCOMES = {

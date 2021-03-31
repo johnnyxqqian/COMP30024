@@ -1,4 +1,4 @@
-from search.main import main
+from main import main
 
 main('test.json')
 
