@@ -51,6 +51,8 @@ def main():
         sys.exit(1)
     """
 
+    start = time.time()
+
     # initialise game object
     game = RoPaSciState()
 
@@ -140,9 +142,6 @@ def main():
     else:
         print("unable to find solution")
 
-def unittest():
-
-    start = time.time()
-    main(f'test27.json')
     end = time.time()
-    print("Search completed in time: ",round(end - start,2), " seconds")
+    print("Search completed in time: ", round(end - start, 2), " seconds")
+

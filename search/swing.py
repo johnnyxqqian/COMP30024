@@ -48,7 +48,3 @@ def target_hex_coordinates(base_tile, target_tile):
     
     else:
         return [target_anchor, target_clockwise, target_anticlockwise]
-    
-
-            
-        
