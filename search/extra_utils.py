@@ -278,9 +278,15 @@ class RoPaSciState(object):
         """
         Looks at board state and calls play_rps on all hexes which have two or more tokens on them
         """
+        updates = []
         for coords, tokens in self.board.items():
             if len(tokens) > 1:
                 survivors = self.play_rps(tokens)
+                updates.append((coords, survivors))
+
+        if updates:
+            for update in updates:
+                coords, survivors = update
                 self._update(coords, survivors)
 
     def heuristic(self):
