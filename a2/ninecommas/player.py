@@ -47,4 +47,3 @@ class Player:
         and player_action is this instance's latest chosen action.
         """
         # put your code here
-
