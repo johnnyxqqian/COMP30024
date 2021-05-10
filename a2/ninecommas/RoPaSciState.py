@@ -16,6 +16,7 @@ from copy import deepcopy
 
 from consts import *
 
+
 class Board(object):
 
     # constructor
@@ -61,6 +62,7 @@ class Board(object):
         """
         result = {}
 
+        # whats the str?
         if side == UPPER:
             is_side = str.isupper
         elif side == LOWER:
@@ -96,7 +98,6 @@ class Board(object):
 
     @staticmethod
     def axial_to_cube(coords):
-
         """
         Takes coordinates in axial form and returns them in cube form.
         Function taken from: https://www.redblobgames.com/grids/hexagons/
@@ -108,7 +109,6 @@ class Board(object):
 
     @staticmethod
     def cube_distance(base, target):
-
         """
         Returns distance between two coordiantes in cube form
         Function taken from: https://www.redblobgames.com/grids/hexagons/
@@ -230,7 +230,7 @@ class Board(object):
         self.resolve_battles()
         self.update_cost()
 
-    def list_legal_moves(self, base_hex):
+    def list_legal_moves(self, base_hex, side):
         """
         Given the current board state, returns a list of all possible moves that can be made from hex a
         1. iterates through all neighbouring hexes and checks legality. If legal, append to result
@@ -275,7 +275,8 @@ class Board(object):
         """
 
         # determing cost of remaining Lower tokens
-        lower_token_cost = ENEMY_TOKEN_COST * len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
+        lower_token_cost = ENEMY_TOKEN_COST * \
+            len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
         distances = []
 
         # iterating over upper tokens
@@ -300,6 +301,61 @@ class Board(object):
             distances.append(min_dist)
 
         return lower_token_cost + sum(distances)
+
+    def has_friendly_tile(self, neighbours, side):
+        tile_set = UPPER_TILES if side == UPEPR else LOWER_TILES
+        for tiles in neighbours:
+            if tiles in tile_set:
+                return True
+        return False
+
+    # identifies swingable & landable tiles
+
+    def swingable_hex_check(self, current_tile, board, neighbours, side):
+        target_tiles = []
+        tile_set = UPPER_TILES if side == UPEPR else LOWER_TILES
+
+        for neighbour in neighbours:
+            if neighbour in board.keys():
+                for token in board[neighbour]:
+                    if token in tile_set:
+
+                        # list of 3-tuples, order is same as swing_tiles so we can trace them
+                        for tile in (target_hex_coordinates(current_tile, neighbour)):
+                            target_tiles.append(tile)
+                            break
+
+        return list(set(target_tiles))
+
+    # returns 3-tuple of target tiles resulting from a swing
+    # does not check if tuples are valid
+
+    def target_hex_coordinates(self, base_tile, target_tile):
+        base_q = base_tile[Q_INDEX]
+        base_r = base_tile[R_INDEX]
+        target_q = target_tile[Q_INDEX]
+        target_r = target_tile[R_INDEX]
+
+        direction = (target_r - base_r, target_q - base_q)
+        dir_r, dir_q = direction
+        target_anchor = (target_r + dir_r, target_q + dir_q)
+
+        for i in range(NUM_DIRECTIONS):
+            if direction == DIRECTIONS[i]:
+                target_clockwise = (
+                    target_r + DIRECTIONS[i - 1][R_INDEX], target_q + DIRECTIONS[i - 1][R_INDEX])
+                target_anticlockwise = (
+                    target_r + DIRECTIONS[0][R_INDEX], target_q + DIRECTIONS[0][Q_INDEX]) if i >= NUM_DIRECTIONS - 1 else (
+                    target_r +
+                        DIRECTIONS[i + 1][R_INDEX], target_q +
+                    DIRECTIONS[i + 1][Q_INDEX]
+                )
+
+        if target_anchor == target_tile:
+            return [target_clockwise, target_anticlockwise]
+
+        else:
+            return [target_anchor, target_clockwise, target_anticlockwise]
 
 
 def unit_test():
