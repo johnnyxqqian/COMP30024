@@ -12,6 +12,11 @@ class Player:
         as Lower).
         """
         self._side = player
+
+        if player == UPPER:
+            self._opponent = LOWER
+        else:
+            self._opponent = UPPER
         self._board = Board()
         # put your code here
 
@@ -22,14 +27,16 @@ class Player:
         """
 
         # TODO
-        # Minimax Algorithm
-        #   For each move
-        #       If terminal node:
+        # func Minimax Algorithm
+        #   For each self move(combinatoric)
+        #       If terminal node ( depth limit reached or game over ):
         #           return heuristic
         #       elif self.side = upper:
         #           // we want to be minimising our heuristic score
-        #           return max(value, func minimax)
+        #           return min(value, func minimax)
         #       elif self.side = lower
+        #           // we want to be maximising our heuristic score
+        #           return max (value, func minimax)
     
     def update(self, opponent_action, player_action):
         """
