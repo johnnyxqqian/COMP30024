@@ -60,22 +60,20 @@ class Board(object):
         side = {'upper', 'lower'}
         """
         result = {}
+
         if side == UPPER:
-            for coords, tokens in self.board.items():
-                for t in tokens:
-                    if t in UPPER_TILES:
-                        if coords in result.keys():
-                            result[coords].append(t)
-                        else:
-                            result[coords] = [t]
+            is_side = str.isupper
         elif side == LOWER:
-            for coords, tokens in self.board.items():
-                for t in tokens:
-                    if t in LOWER_TILES:
-                        if coords in result.keys():
-                            result[coords].append(t)
-                        else:
-                            result[coords] = [t]
+            is_side = str.islower
+
+        for coords, tokens in self.board.items():
+            for t in tokens:
+                if is_side(t):
+                    if coords in result.keys():
+                        result[coords].append(t)
+                    else:
+                        result[coords] = [t]
+
         return result
 
     @staticmethod
