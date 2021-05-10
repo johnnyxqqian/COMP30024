@@ -13,7 +13,6 @@ from search.util import *
 
 from copy import deepcopy
 
-
 from consts import *
 
 
@@ -258,7 +257,6 @@ class Board(object):
         """
         updates = []
         for coords, tokens in self.board.items():
-            # print("coords = ", coords , "tokens =", tokens)
             if len(tokens) > 1:
                 survivors = self.play_rps(tokens)
                 updates.append((coords, survivors))
@@ -271,7 +269,7 @@ class Board(object):
     def heuristic(self):
         """
         Calculates the heuristic. Currently takes 2 factors:
-        1. absolute hex distance (minimum hex distance) from meach
+        1. absolute hex distance (minimum hex distance) from each
         """
 
         # determing cost of remaining Lower tokens
