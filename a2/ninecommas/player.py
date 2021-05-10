@@ -1,4 +1,6 @@
 
+from a2.ninecommas.RoPaSciState import *
+
 class Player:
     def __init__(self, player):
         """
@@ -10,7 +12,7 @@ class Player:
         as Lower).
         """
         self._side = player
-
+        self._board = Board()
         # put your code here
 
     def action(self):
