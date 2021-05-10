@@ -7,16 +7,12 @@ Simon Chen 1003925
 Xue Qiang Qian 1081725
 """
 
-from search.swing import *
-from search.init import *
-from search.util import *
-
 from copy import deepcopy
 
-from consts import *
+from a2.ninecommas.consts import *
 
 
-class Board(object):
+class RoPaSciState(object):
 
     # constructor
     def __init__(self, board={}, turn=0):
@@ -245,7 +241,7 @@ class Board(object):
             if self.is_legal_slide(base_hex, neighbour):
                 result.append(neighbour)
 
-        for hex in swingable_hex_check(base_hex, self.board, neighbours):
+        for hex in self.swingable_hex_check(base_hex, self.board, neighbours):
             if self.within_board(hex):
                 result.append(hex)
 
@@ -300,15 +296,16 @@ class Board(object):
 
         return lower_token_cost + sum(distances)
 
+    @staticmethod
     def has_friendly_tile(self, neighbours, side):
-        tile_set = UPPER_TILES if side == UPEPR else LOWER_TILES
+        tile_set = UPPER_TILES if side == UPPER else LOWER_TILES
         for tiles in neighbours:
             if tiles in tile_set:
                 return True
         return False
 
     # identifies swingable & landable tiles
-
+    @staticmethod
     def swingable_hex_check(self, current_tile, board, neighbours, side):
         target_tiles = []
         tile_set = UPPER_TILES if side == UPEPR else LOWER_TILES
@@ -319,7 +316,7 @@ class Board(object):
                     if token in tile_set:
 
                         # list of 3-tuples, order is same as swing_tiles so we can trace them
-                        for tile in (target_hex_coordinates(current_tile, neighbour)):
+                        for tile in (RoPaSciState.target_hex_coordinates(current_tile, neighbour)):
                             target_tiles.append(tile)
                             break
 
@@ -327,7 +324,7 @@ class Board(object):
 
     # returns 3-tuple of target tiles resulting from a swing
     # does not check if tuples are valid
-
+    @staticmethod
     def target_hex_coordinates(self, base_tile, target_tile):
         base_q = base_tile[Q_INDEX]
         base_r = base_tile[R_INDEX]
