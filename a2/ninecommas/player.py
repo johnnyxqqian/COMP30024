@@ -9,6 +9,8 @@ class Player:
         play as Upper), or the string "lower" (if the instance will play
         as Lower).
         """
+        self._side = player
+
         # put your code here
 
     def action(self):
@@ -16,7 +18,16 @@ class Player:
         Called at the beginning of each turn. Based on the current state
         of the game, select an action to play this turn.
         """
-        # put your code here
+
+        # TODO
+        # Minimax Algorithm
+        #   For each move
+        #       If terminal node:
+        #           return heuristic
+        #       elif self.side = upper:
+        #           // we want to be minimising our heuristic score
+        #           return max(value, func minimax)
+        #       elif self.side = lower
     
     def update(self, opponent_action, player_action):
         """
