@@ -238,7 +238,8 @@ class RoPaSciState(object):
         if player_move:
             if player_move[0] == 'THROW':
                 self.throws[player_side] -= 1
-                self.apply_move(None, player_move[2], to_player_case(player_move[1]))
+                self.apply_move(
+                    None, player_move[2], to_player_case(player_move[1]))
             else:
                 self.apply_move(player_move[1],
                                 player_move[2],
@@ -302,7 +303,7 @@ class RoPaSciState(object):
 
         # determining cost of remaining Lower tokens
         lower_token_cost = ENEMY_TOKEN_COST * \
-                           len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
+            len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
         distances = []
 
         # iterating over upper tokens
@@ -384,6 +385,15 @@ class RoPaSciState(object):
 
         else:
             return [target_anchor, target_clockwise, target_anticlockwise]
+
+    def possible_throws(self, side):
+        throws = -4 + \
+            self.throws["upper"] if side == UPPER else -4+self.throws["lower"]
+        throw_range = range(-4, throws+1)
+        possible_hexes = [
+            (r, q) for r in throw_range for q in _HEX_RANGE if -r - q in _HEX_RANGE]
+
+        return possible_hexes
 
 
 def unit_test():
