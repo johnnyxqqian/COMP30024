@@ -9,6 +9,7 @@ Xue Qiang Qian 1081725
 
 from copy import deepcopy
 from .consts import *
+import numpy as np
 
 
 class RoPaSciState(object):
@@ -224,16 +225,12 @@ class RoPaSciState(object):
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
 
+        #boardkey = hash(frozenset(self.board.items()))
 
-<< << << < HEAD
-        # self.board_history.append(deepcopy(self.board))
-== == == =
-
-        if self.board in self.board_history:
-            self.board_history[self.board] += 1
-        else:
-            self.board_history[self.board] = 1
->>>>>> > b493d4a58f8efb7d0a25da7aea07a2be4a38ce14
+        #if boardkey in self.board_history.keys():
+        #    self.board_history[boardkey] += 1
+        #else:
+        #    self.board_history[boardkey] = 1
 
         # process player move
         if player_side == UPPER:
@@ -327,7 +324,7 @@ class RoPaSciState(object):
         for token, r, q in self.board_dict_to_iterable(self.list_tokens('upper')):
             j = 0
             for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens('lower')):
-                if _BEATS_WHAT[token.lower()] == target_t:
+                if BEATS_WHAT[token.lower()] == target_t:
                     pred[i][j] = self.hex_distance(
                         (r, q), (target_r, target_q))
                 elif token == target_t:
@@ -360,11 +357,11 @@ class RoPaSciState(object):
 
         up_invinc = [
             s for s in up_symset
-            if (lo_throws == 0) and (_WHAT_BEATS[s] not in lo_symset)
+            if (lo_throws == 0) and (WHAT_BEATS[s] not in lo_symset)
         ]
         lo_invinc = [
             s for s in lo_symset
-            if (up_throws == 0) and (_WHAT_BEATS[s] not in up_symset)
+            if (up_throws == 0) and (WHAT_BEATS[s] not in up_symset)
         ]
 
         up_notoks = (up_throws == 0) and (len(up_tokens) == 0)
@@ -396,7 +393,7 @@ class RoPaSciState(object):
 #             return COST_DRAW
 
         # condition 5: the players have had their 360th turn without end
-        if self.turn >= _MAX_TURNS:
+        if self.turn >= MAX_TURNS:
             return COST_DRAW
 
         # feature 3: invincible tokens
