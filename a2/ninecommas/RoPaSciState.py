@@ -300,7 +300,7 @@ class RoPaSciState(object):
         1. absolute hex distance (minimum hex distance) from each
         """
 
-        # determing cost of remaining Lower tokens
+        # determining cost of remaining Lower tokens
         lower_token_cost = ENEMY_TOKEN_COST * \
                            len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
         distances = []

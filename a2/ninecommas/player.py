@@ -20,12 +20,54 @@ class Player:
         self._game = RoPaSciState()
         # put your code here
 
-    def minmax(self, moves, depth):
+    def minmax(self, state, moves, depth, side):
+        #iterate through (move)
+
+        if depth == 0:
+
+            value = state.heuristic()
+            return value
+
+        # Generate possible moves
         for possible_move in moves:
-            if depth == 0:
-                new_state = deepcopy(self._game)
-                new_state.take_turn(possible_move, None, self._side)
-                value = new_state.heuristic()
+
+            # Pick a "Best" opposing move
+            # Apply our possible and enemy "best" move
+            # Get a new state
+
+            if side == UPPER:
+
+                # If upper, we want our heuristic to be lower
+                criteria = min
+
+                # Pick an opposing move
+                #
+
+                return
+
+            elif side == LOWER:
+
+                # If lower, we want our heuristic to be higher
+                criteria = max
+
+                return
+
+        # new_state = deepcopy(self._game)
+        # new_state.take_turn(possible_move, None, self._side)
+        best_move = None
+        return best_move
+
+    # TODO
+    # func Minimax Algorithm
+    #   For each self move(combinatoric)
+    #       If terminal node ( depth limit reached or game over ):
+    #           return heuristic
+    #       elif self.side = upper:
+    #           // we want to be minimising our heuristic score
+    #           return min(value, func minimax)
+    #       elif self.side = lower
+    #           // we want to be maximising our heuristic score
+    #           return max (value, func minimax)
 
     def action(self):
         """
@@ -36,34 +78,19 @@ class Player:
         ### Generate all possible moves
         # Generate all swings and slides
         possible_moves = []
-        for t,r,q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side))
+        for t,r,q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side)):
             legal_moves = self._game.list_legal_moves((r, q))
             for legal_move in legal_moves:
                 move = (legal_move[0], (r,q), legal_move[1])
                 possible_moves.append(move)
 
+        return possible_moves[0]
         # Generate all throws
 
         # Minimax algorithm starts here
 
-        def minmax(moves, heuristic, depth, side):
-            for possible_move in moves:
-                if depth == 0:
-                    value =
 
 
-
-        # TODO
-        # func Minimax Algorithm
-        #   For each self move(combinatoric)
-        #       If terminal node ( depth limit reached or game over ):
-        #           return heuristic
-        #       elif self.side = upper:
-        #           // we want to be minimising our heuristic score
-        #           return min(value, func minimax)
-        #       elif self.side = lower
-        #           // we want to be maximising our heuristic score
-        #           return max (value, func minimax)
     
     def update(self, opponent_action, player_action):
         """
