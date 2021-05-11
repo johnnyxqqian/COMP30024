@@ -220,7 +220,7 @@ class RoPaSciState(object):
         # throws in the form ("THROW", s, (r, q))
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
-        #self.board_history.append(deepcopy(self.board))
+        # self.board_history.append(deepcopy(self.board))
 
         # process player move
         if player_side == UPPER:
@@ -385,8 +385,9 @@ class RoPaSciState(object):
 
     def possible_throws(self, side):
         throws = -4 + \
-            self.throws["upper"] if side == UPPER else -4+self.throws["lower"]
-        throw_range = range(-4, throws+1)
+            self.throws["lower"] if side == LOWER else 4-self.throws["uppper"]
+        throw_range = range(-4, throws +
+                            1) if side == LOWER else range(throws, 4+1, -1)
         hex_range = range(-4, +4+1)
         possible_hexes = [
             (r, q) for r in throw_range for q in hex_range if -r - q in hex_range]
