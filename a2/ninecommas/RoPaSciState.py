@@ -224,10 +224,16 @@ class RoPaSciState(object):
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
 
+
+<< << << < HEAD
+        # self.board_history.append(deepcopy(self.board))
+== == == =
+
         if self.board in self.board_history:
             self.board_history[self.board] += 1
         else:
             self.board_history[self.board] = 1
+>>>>>> > b493d4a58f8efb7d0a25da7aea07a2be4a38ce14
 
         # process player move
         if player_side == UPPER:
@@ -300,38 +306,148 @@ class RoPaSciState(object):
                 self._update(coords, survivors)
 
     def heuristic(self):
-        """
-        Calculates the heuristic. Currently takes 2 factors:
-        1. absolute hex distance (minimum hex distance) from each
-        """
 
-        # determining cost of remaining Lower tokens
-        lower_token_cost = ENEMY_TOKEN_COST * \
-                           len(self.board_dict_to_iterable(self.list_lower_tokens()))
-        distances = []
+        # implicity determines if we've beat an enemy token
+        cost = 0
 
-        # iterating over upper tokens
-        for token, r, q in self.board_dict_to_iterable(self.list_upper_tokens()):
+        # feature 1: # our emaining tokens
+        # need to check if side is upper / lower case
+        cost += COST_LIVE_TOKEN * len(self.list_tokens(
+            "upper")) + (9-self.throws["upper"])
 
-            min_dist = MAX_DIST + 1
+        # feature 2: # enemy tokens
+        cost -= COST_LIVE_TOKEN * len(self.list_tokens(
+            "lower")) + (9-self.throws["lower"])
 
-            # iterating over lower tokens
-            for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_lower_tokens()):
+        print("cost pre-matrix = ", cost)
+        # feature 3: distance of tokens from prey / predator
+        pred = np.zeros((9, 9))
+        i = j = 0
 
-                # hex distance
-                dist = self.hex_distance((r, q), (target_r, target_q))
+        for token, r, q in self.board_dict_to_iterable(self.list_tokens('upper')):
+            j = 0
+            for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens('lower')):
+                if _BEATS_WHAT[token.lower()] == target_t:
+                    pred[i][j] = self.hex_distance(
+                        (r, q), (target_r, target_q))
+                elif token == target_t:
+                    pred[i][j] == 0
+                else:
+                    pred[i][j] = (-1)*self.hex_distance((r, q),
+                                                        (target_r, target_q))
+                j += 1
+            i += 1
 
-                # checking if our token can beat the enemy token and if a lower distance has been found
-                if RPS_OUTCOMES[token.lower(), target_t.lower()] and dist < min_dist:
-                    min_dist = dist
+        # need to factor in throws increaing the cost
+        cost += np.sum(pred)
 
-            # no beatable lower tokens remain - we do not add into distance
-            if min_dist == MAX_DIST + 1:
-                continue
+        print("cost post matrix - ", cost)
 
-            distances.append(min_dist)
+        up_throws = 9 - self.throws["upper"]
+        lo_throws = 9 - self.throws["lower"]
 
-        return lower_token_cost + sum(distances)
+        # should this just be s?
+        up_tokens = [
+            s.lower() for x in self.board.values() for s in x if s.isupper()
+        ]
+
+        lo_tokens = [
+            s for x in self.board.values() for s in x if s.islower()
+        ]
+
+        up_symset = set(up_tokens)
+        lo_symset = set(lo_tokens)
+
+        up_invinc = [
+            s for s in up_symset
+            if (lo_throws == 0) and (_WHAT_BEATS[s] not in lo_symset)
+        ]
+        lo_invinc = [
+            s for s in lo_symset
+            if (up_throws == 0) and (_WHAT_BEATS[s] not in up_symset)
+        ]
+
+        up_notoks = (up_throws == 0) and (len(up_tokens) == 0)
+        lo_notoks = (lo_throws == 0) and (len(lo_tokens) == 0)
+        up_onetok = (up_throws == 0) and (len(up_tokens) == 1)
+        lo_onetok = (lo_throws == 0) and (len(lo_tokens) == 1)
+
+        # condition 1: one player has no remaining throws or tokens
+        if up_notoks and lo_notoks:
+            return COST_DRAW
+        if up_notoks:
+            return COST_WIN * (-1)
+        if lo_notoks:
+            return COST_WIN
+
+        # condition 2: both players have an invincible token
+        if up_invinc and lo_invinc:
+            return COST_DRAW
+
+        # condition 3: one player has an invincible token, the other has
+        #              only one token remaining (not invincible by 2)
+        if up_invinc and lo_onetok:
+            return COST_WIN
+        if lo_invinc and up_onetok:
+            return COST_WIN * (-1)
+
+        # condition 4: the same state has occurred for a 3rd time
+#         if self.history[state] >= 3:
+#             return COST_DRAW
+
+        # condition 5: the players have had their 360th turn without end
+        if self.turn >= _MAX_TURNS:
+            return COST_DRAW
+
+        # feature 3: invincible tokens
+        for side in ["upper", "lower"]:
+            invinc = up_invinc if side == UPPER else lo_invinc
+            throws = lo_throws if side == UPPER else up_throws
+            side_flag = 1 if side == UPPER else -1
+
+            # 1 invincible token
+            cost += COST_INVINC * \
+                side_flag if (len(up_invinc) == 1 and lo_throws == 0) else 0
+
+            # 2 invincible tokens
+            cost += COST_DOUB_INVIC * \
+                side_flag if (len(invinc) == 2 and throws < 2) else 0
+
+        # if enenmy neighbour, check if beatable
+        # if friendly neighbour, increase cost
+        # to confirm with simon
+
+        """"
+        visited=set()
+        for token, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
+            neighbours = neighbour_hexes((r, q))
+            neighbourset = set()
+            for neighbour in neighbours:
+                if neighbour in board_state.board.keys() and neighbour not in visited:
+
+                    # friendly token
+                    if token.isupper() and self.board[neighbour].isupper():
+                        cost += COST_FRIENDLY_NEIGHBOUR
+                    elif token.islower() and self.board[neighbour].islower():
+                        cost -= COST_FRIENDLY_NEIGHBOUR
+
+                    # enemy token
+                    else:
+                        # enemy neighbour we can lose to
+                        if _WHAT_BEATS[token] == self.board[neighbour].lower():
+                            cost -= COST_BNEIGHBOUR * side_flag
+
+                        # enemy neighbour we can beat
+                        elif _BEATS_WHAT[token] == self.sate.board[neighbour].lower():
+                            cost += COST_GNEIGHBOUR * side_flag
+
+                        # enemy neighbour is the same token
+                        else:
+                            cost += 0
+                    visited.add(neighbour)
+            """
+        print(cost)
+        return cost
 
     @staticmethod
     def has_friendly_tile(neighbours, side):
@@ -397,7 +513,7 @@ class RoPaSciState(object):
             throw_range = range(4 - 9 + self.throws[UPPER], +4 + 1)
 
         else:  # Side is lower
-            throw_range = range(-4, -4 + 10 - self.throws[LOWER])
+            throw_range = range(-4, -4+10-self.throws[LOWER])
 
         hex_range = range(-4, +4 + 1)
         possible_hexes = [
