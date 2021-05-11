@@ -140,10 +140,13 @@ class RoPaSciState(object):
         Determines whether a coordinate is within the game board
         """
         r, q = coords
-        board_range = range(-4, +4+1)
-        if -r-q in board_range:
-            return True
-        return False
+        if abs(r + q) > 4:
+            return False
+        if abs(r) > 4:
+            return False
+        if abs(q) > 4:
+            return False
+        return True
 
     @staticmethod
     def play_rps(tokens):
@@ -335,7 +338,6 @@ class RoPaSciState(object):
         return False
 
     # identifies swingable & landable tiles
-    @staticmethod
     def swingable_hex_check(self, current_tile, board, neighbours, side):
         target_tiles = []
         tile_set = UPPER_TILES if side == UPPER else LOWER_TILES
@@ -384,9 +386,13 @@ class RoPaSciState(object):
             return [target_anchor, target_clockwise, target_anticlockwise]
 
     def possible_throws(self, side):
-        throws = -4 + \
-            self.throws["upper"] if side == UPPER else -4+self.throws["lower"]
-        throw_range = range(-4, throws+1)
+
+        if side == UPPER:
+            throw_range = range(4-9+self.throws[UPPER], +4+1)
+
+        else: # Side is lower
+            throw_range = range(-4, -4+10-self.throws[LOWER])
+
         hex_range = range(-4, +4+1)
         possible_hexes = [
             (r, q) for r in throw_range for q in hex_range if -r - q in hex_range]
