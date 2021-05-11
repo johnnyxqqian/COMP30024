@@ -1,4 +1,5 @@
 
+import numpy as np
 
 from .RoPaSciState import *
 COST_LIVE_TOKEN = 10
@@ -15,7 +16,6 @@ COST_GNEIGHBOUR = 10
 def heuristic(self, side):
 
     # implicity determines if we've beat an enemy token
-
     cost = 0
 
     # switch used to account for sides
@@ -29,6 +29,25 @@ def heuristic(self, side):
     # feature 2: # enemy tokens
     cost -= COST_LIVE_TOKEN * len(self.list_tokens(
         side)) * side_flag + (9-self.throws[side])
+
+    # feature 3: distance of tokens from prey / predator
+    pred = np.zeros((9, 9))
+    i = j = 0
+
+    for token, r, q in self.board_dict_to_iterable(self.list_tokens('upper')):
+        j = 0
+        for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens('lower')):
+            if _BEATS_WHAT[token] == target_t:
+                pred[i][j] = hex_distance((r, q), (target_r, target_q))
+            elif tokens == target_t:
+                pred[i][j] == 0
+            else:
+                pred[i][j] = (-1)*self.hex_distance((r, q),
+                                                    (target_r, target_q))
+                j += 1
+            i += 1
+
+    cost += sum(pred)*side_flag
 
     up_throws = 9 - self.throws["upper"]
     lo_throws = 9 - self.throws["lower"]
