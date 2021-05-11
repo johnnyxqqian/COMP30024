@@ -12,6 +12,7 @@ COST_DOUB_INVIC = 1000
 COST_FRIENDLY_NEIGHBOUR = 5
 COST_BNEIGHBOUR = 10
 COST_GNEIGHBOUR = 10
+COST_INVINC = 10
 
 
 def heuristic(self, side):
@@ -40,7 +41,7 @@ def heuristic(self, side):
         for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens('lower')):
             if _BEATS_WHAT[token] == target_t:
                 pred[i][j] = hex_distance((r, q), (target_r, target_q))
-            elif tokens == target_t:
+            elif token == target_t:
                 pred[i][j] == 0
             else:
                 pred[i][j] = (-1)*self.hex_distance((r, q),
