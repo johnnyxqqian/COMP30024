@@ -8,7 +8,6 @@ Xue Qiang Qian 1081725
 """
 
 from copy import deepcopy
-
 from .consts import *
 
 
@@ -22,6 +21,7 @@ class RoPaSciState(object):
         self.board = board
         self.turn = turn
         self.throws = {UPPER: 9, LOWER: 9}
+        self.board_history = {}
 
     def _insert(self, coords, token):
         """
@@ -223,7 +223,17 @@ class RoPaSciState(object):
         # throws in the form ("THROW", s, (r, q))
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
+
+
+<< << << < HEAD
         # self.board_history.append(deepcopy(self.board))
+== == == =
+
+        if self.board in self.board_history:
+            self.board_history[self.board] += 1
+        else:
+            self.board_history[self.board] = 1
+>>>>>> > b493d4a58f8efb7d0a25da7aea07a2be4a38ce14
 
         # process player move
         if player_side == UPPER:
@@ -243,7 +253,7 @@ class RoPaSciState(object):
             else:
                 self.apply_move(player_move[1],
                                 player_move[2],
-                                self.board[player_move[1]][0])
+                                self.list_tokens(player_side)[player_move[1]][0])
 
         if opponent_move:
             if opponent_move[0] == 'THROW':
@@ -254,7 +264,7 @@ class RoPaSciState(object):
             else:
                 self.apply_move(opponent_move[1],
                                 opponent_move[2],
-                                self.board[opponent_move[1]][0])
+                                self.list_tokens(opp_side)[opponent_move[1]][0])
 
         self.resolve_battles()
 
@@ -496,14 +506,16 @@ class RoPaSciState(object):
             return [target_anchor, target_clockwise, target_anticlockwise]
 
     def possible_throws(self, side):
+        if self.throws[side] == 0:
+            return []
 
         if side == UPPER:
-            throw_range = range(4-9+self.throws[UPPER], +4+1)
+            throw_range = range(4 - 9 + self.throws[UPPER], +4 + 1)
 
         else:  # Side is lower
             throw_range = range(-4, -4+10-self.throws[LOWER])
 
-        hex_range = range(-4, +4+1)
+        hex_range = range(-4, +4 + 1)
         possible_hexes = [
             (r, q) for r in throw_range for q in hex_range if -r - q in hex_range]
 
