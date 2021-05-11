@@ -111,6 +111,7 @@ class Player:
         # player actions in the form:
 
         self._game.take_turn(player_action, opponent_action, self._side)
+        print(self._game.heuristic())
         #print("board: ")
         #self.print_board()
         #self.print_board(self._game.list_tokens(UPPER))
