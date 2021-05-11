@@ -60,7 +60,7 @@ class RoPaSciState(object):
         # whats the str?
         if side == UPPER:
             is_side = str.isupper
-        elif side == LOWER:
+        else:
             is_side = str.islower
 
         for coords, tokens in self.board.items():
@@ -140,13 +140,10 @@ class RoPaSciState(object):
         Determines whether a coordinate is within the game board
         """
         r, q = coords
-        if abs(r + q) > 4:
-            return False
-        if abs(r) > 4:
-            return False
-        if abs(q) > 4:
-            return False
-        return True
+        board_range = range(-4, +4+1)
+        if -r-q in board_range:
+            return True
+        return False
 
     @staticmethod
     def play_rps(tokens):
@@ -223,7 +220,7 @@ class RoPaSciState(object):
         # throws in the form ("THROW", s, (r, q))
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
-        self.board_history.append(deepcopy(self.board))
+        #self.board_history.append(deepcopy(self.board))
 
         # process player move
         if player_side == UPPER:
@@ -274,9 +271,9 @@ class RoPaSciState(object):
             if self.is_legal_slide(base_hex, neighbour):
                 result.append(("SLIDE", neighbour))
 
-        for hex in self.swingable_hex_check(base_hex, self.board, neighbours):
-            if self.within_board(hex):
-                result.append(("SWING", hex))
+        for tile in self.swingable_hex_check(base_hex, self.board, neighbours, side):
+            if self.within_board(tile):
+                result.append(("SWING", tile))
 
         return result
 
@@ -303,16 +300,16 @@ class RoPaSciState(object):
 
         # determining cost of remaining Lower tokens
         lower_token_cost = ENEMY_TOKEN_COST * \
-            len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
+            len(self.board_dict_to_iterable(self.list_lower_tokens()))
         distances = []
 
         # iterating over upper tokens
-        for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
+        for token, r, q in self.board_dict_to_iterable(self.list_upper_tokens()):
 
             min_dist = MAX_DIST + 1
 
             # iterating over lower tokens
-            for target_t, target_r, target_q in RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()):
+            for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_lower_tokens()):
 
                 # hex distance
                 dist = self.hex_distance((r, q), (target_r, target_q))
@@ -330,7 +327,7 @@ class RoPaSciState(object):
         return lower_token_cost + sum(distances)
 
     @staticmethod
-    def has_friendly_tile(self, neighbours, side):
+    def has_friendly_tile(neighbours, side):
         tile_set = UPPER_TILES if side == UPPER else LOWER_TILES
         for tiles in neighbours:
             if tiles in tile_set:
@@ -349,7 +346,7 @@ class RoPaSciState(object):
                     if token in tile_set:
 
                         # list of 3-tuples, order is same as swing_tiles so we can trace them
-                        for tile in (RoPaSciState.target_hex_coordinates(current_tile, neighbour)):
+                        for tile in (self.target_hex_coordinates(current_tile, neighbour)):
                             target_tiles.append(tile)
                             break
 
@@ -358,7 +355,7 @@ class RoPaSciState(object):
     # returns 3-tuple of target tiles resulting from a swing
     # does not check if tuples are valid
     @staticmethod
-    def target_hex_coordinates(self, base_tile, target_tile):
+    def target_hex_coordinates(base_tile, target_tile):
         base_q = base_tile[Q_INDEX]
         base_r = base_tile[R_INDEX]
         target_q = target_tile[Q_INDEX]
@@ -391,7 +388,7 @@ class RoPaSciState(object):
             self.throws["upper"] if side == UPPER else -4+self.throws["lower"]
         throw_range = range(-4, throws+1)
         possible_hexes = [
-            (r, q) for r in throw_range for q in _HEX_RANGE if -r - q in _HEX_RANGE]
+            (r, q) for r in throw_range for q in throw_range if -r - q in throw_range]
 
         return possible_hexes
 

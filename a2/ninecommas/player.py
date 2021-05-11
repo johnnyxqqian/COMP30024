@@ -1,5 +1,6 @@
-
 from a2.ninecommas.RoPaSciState import *
+from a2.ninecommas.consts import *
+
 
 class Player:
     def __init__(self, player):
@@ -17,14 +18,14 @@ class Player:
             self._opponent = LOWER
         else:
             self._opponent = UPPER
+
         self._game = RoPaSciState()
         # put your code here
-
+    """
     def minmax(self, state, moves, depth, side):
-        #iterate through (move)
+        # iterate through (move)
 
         if depth == 0:
-
             value = state.heuristic()
             return value
 
@@ -68,6 +69,7 @@ class Player:
     #       elif self.side = lower
     #           // we want to be maximising our heuristic score
     #           return max (value, func minimax)
+    """
 
     def action(self):
         """
@@ -78,20 +80,24 @@ class Player:
         ### Generate all possible moves
         # Generate all swings and slides
         possible_moves = []
-        for t,r,q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side)):
-            legal_moves = self._game.list_legal_moves((r, q))
+        for t, r, q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side)):
+            legal_moves = self._game.list_legal_moves((r, q),)
             for legal_move in legal_moves:
-                move = (legal_move[0], (r,q), legal_move[1])
+                move = (legal_move[0], (r, q), legal_move[1])
+                possible_moves.append(move)
+
+        if self._side == UPPER:
+            token_set = UPPER_TILES
+        else:
+            token_set = LOWER_TILES
+
+        for t in token_set:
+            for tile in self._game.possible_throws(self._side):
+                move = ("THROW", t.lower(), tile)
                 possible_moves.append(move)
 
         return possible_moves[0]
-        # Generate all throws
 
-        # Minimax algorithm starts here
-
-
-
-    
     def update(self, opponent_action, player_action):
         """
         Called at the end of each turn to inform this player of both

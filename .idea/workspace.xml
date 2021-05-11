@@ -25,7 +25,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ee40b64-5d12-4f84-b6dd-58f4c83b4cd4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/player.py" afterDir="false" />
     </list>
