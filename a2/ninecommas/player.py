@@ -1,5 +1,5 @@
-from a2.ninecommas.RoPaSciState import *
-from a2.ninecommas.consts import *
+from .RoPaSciState import *
+from .consts import *
 
 
 class Player:
@@ -81,7 +81,7 @@ class Player:
         # Generate all swings and slides
         possible_moves = []
         for t, r, q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side)):
-            legal_moves = self._game.list_legal_moves((r, q),)
+            legal_moves = self._game.list_legal_moves((r, q),self._side)
             for legal_move in legal_moves:
                 move = (legal_move[0], (r, q), legal_move[1])
                 possible_moves.append(move)

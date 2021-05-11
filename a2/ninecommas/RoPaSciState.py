@@ -9,7 +9,7 @@ Xue Qiang Qian 1081725
 
 from copy import deepcopy
 
-from a2.ninecommas.consts import *
+from .consts import *
 
 
 class RoPaSciState(object):
@@ -387,8 +387,9 @@ class RoPaSciState(object):
         throws = -4 + \
             self.throws["upper"] if side == UPPER else -4+self.throws["lower"]
         throw_range = range(-4, throws+1)
+        hex_range = range(-4, +4+1)
         possible_hexes = [
-            (r, q) for r in throw_range for q in throw_range if -r - q in throw_range]
+            (r, q) for r in throw_range for q in hex_range if -r - q in hex_range]
 
         return possible_hexes
 
