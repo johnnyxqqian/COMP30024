@@ -17,14 +17,41 @@ class Player:
             self._opponent = LOWER
         else:
             self._opponent = UPPER
-        self._board = Board()
+        self._game = RoPaSciState()
         # put your code here
+
+    def minmax(self, moves, depth):
+        for possible_move in moves:
+            if depth == 0:
+                new_state = deepcopy(self._game)
+                new_state.take_turn(possible_move, None, self._side)
+                value = new_state.heuristic()
 
     def action(self):
         """
         Called at the beginning of each turn. Based on the current state
         of the game, select an action to play this turn.
         """
+
+        ### Generate all possible moves
+        # Generate all swings and slides
+        possible_moves = []
+        for t,r,q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side))
+            legal_moves = self._game.list_legal_moves((r, q))
+            for legal_move in legal_moves:
+                move = (legal_move[0], (r,q), legal_move[1])
+                possible_moves.append(move)
+
+        # Generate all throws
+
+        # Minimax algorithm starts here
+
+        def minmax(moves, heuristic, depth, side):
+            for possible_move in moves:
+                if depth == 0:
+                    value =
+
+
 
         # TODO
         # func Minimax Algorithm
@@ -47,3 +74,6 @@ class Player:
         and player_action is this instance's latest chosen action.
         """
         # put your code here
+        # player actions in the form:
+
+        self._game.take_turn(player_action, opponent_action, self._side)
