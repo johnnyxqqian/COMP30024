@@ -1,1 +1,1 @@
-from team_name.player import Player
+from ninecommas.player import Player

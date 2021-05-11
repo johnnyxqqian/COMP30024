@@ -2,6 +2,7 @@
 import numpy as np
 
 from .RoPaSciState import *
+
 COST_LIVE_TOKEN = 10
 COST_WIN_CONDITION = 10
 COST_WIN = 10000
