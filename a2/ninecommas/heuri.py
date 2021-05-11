@@ -12,7 +12,7 @@ COST_BNEIGHBOUR = 10
 COST_GNEIGHBOUR = 10
 
 
-def heuristic(board_state, side):
+def heuristic(self, side):
 
     # implicity determines if we've beat an enemy token
 
@@ -21,9 +21,13 @@ def heuristic(board_state, side):
     # switch used to account for sides
     side_flag = 1 if side == UPPER else -1
 
-    # # remaining tokens
+    # feature 1: # our emaining tokens
     # need to check if side is upper / lower case
-    cost += COST_LIVE_TOKEN * len(board_state.list_tokens(
+    cost += COST_LIVE_TOKEN * len(self.list_tokens(
+        side)) * side_flag + (9-self.throws[side])
+
+    # feature 2: # enemy tokens
+    cost -= COST_LIVE_TOKEN * len(self.list_tokens(
         side)) * side_flag + (9-self.throws[side])
 
     up_throws = 9 - self.throws["upper"]
@@ -81,8 +85,8 @@ def heuristic(board_state, side):
     if self.nturns >= _MAX_TURNS:
         return COST_DRAW * side_flag
 
+    # feature 3: invincible tokens
     # 1 invincible token
-    # need to confirm how we weight these
     cost += COST_INVINC * \
         side_flag if (len(up_invinc) == 1 and lo_throws == 0) else 0
     cost += COST_INVINC * side_flag * \
@@ -97,7 +101,7 @@ def heuristic(board_state, side):
     # if enenmy neighbour, check if beatable
     # if friendly neighbour, increase cost
     # to confirm with simon
-    for token, r, q in RoPaSciState.board_dict_to_iterable(self.list_upper_tokens()):
+    for token, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
         neighbours = neighbour_hexes((r, q))
         for neighbour in neighbours:
             if neighbour in board_state.board.keys():
