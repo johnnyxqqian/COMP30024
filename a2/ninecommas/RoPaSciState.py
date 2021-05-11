@@ -208,22 +208,54 @@ class RoPaSciState(object):
         """
         Moves a token from hex base > hex target in the game dictionary.
         Does not check if such move is legal.
+        For a throw, pass base=None
         """
-        self._remove(base, token)
+        if base:
+            self._remove(base, token)
         self._insert(target, token)
 
-    def take_turn(self, moves):
+    def take_turn(self, player_move, opponent_move, player_side):
         """
         applies the moves, increments the turn, and records all moves.
         Returns the resulting new board state.
         """
+
+        # throws in the form ("THROW", s, (r, q))
+        # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
         self.board_history.append(deepcopy(self.board))
-        for a, b, t in moves:
-            self.apply_move(a, b, t)
-            self.move_history.append((a, b, t, self.turn))
+
+        # process player move
+        if player_side == UPPER:
+            to_player_case = str.upper
+            to_opp_case = str.lower
+            opp_side = LOWER
+        else:
+            to_player_case = str.lower
+            to_opp_case = str.upper
+            opp_side = UPPER
+
+        if player_move:
+            if player_move[0] == 'THROW':
+                self.throws[player_side] -= 1
+                self.apply_move(None, player_move[2], to_player_case(player_move[1]))
+            else:
+                self.apply_move(player_move[1],
+                                player_move[2],
+                                self.board[player_move[1]][0])
+
+        if opponent_move:
+            if opponent_move[0] == 'THROW':
+                self.throws[opp_side] -= 1
+                self.apply_move(None,
+                                opponent_move[2],
+                                to_opp_case(opponent_move[1]))
+            else:
+                self.apply_move(opponent_move[1],
+                                opponent_move[2],
+                                self.board[opponent_move[1]][0])
+
         self.resolve_battles()
-        self.update_cost()
 
     def list_legal_moves(self, base_hex, side):
         """
@@ -239,11 +271,11 @@ class RoPaSciState(object):
 
         for neighbour in neighbours:
             if self.is_legal_slide(base_hex, neighbour):
-                result.append(neighbour)
+                result.append(("SLIDE", neighbour))
 
         for hex in self.swingable_hex_check(base_hex, self.board, neighbours):
             if self.within_board(hex):
-                result.append(hex)
+                result.append(("SWING", hex))
 
         return result
 
@@ -270,7 +302,7 @@ class RoPaSciState(object):
 
         # determing cost of remaining Lower tokens
         lower_token_cost = ENEMY_TOKEN_COST * \
-            len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
+                           len(RoPaSciState.board_dict_to_iterable(self.list_lower_tokens()))
         distances = []
 
         # iterating over upper tokens
@@ -308,7 +340,7 @@ class RoPaSciState(object):
     @staticmethod
     def swingable_hex_check(self, current_tile, board, neighbours, side):
         target_tiles = []
-        tile_set = UPPER_TILES if side == UPEPR else LOWER_TILES
+        tile_set = UPPER_TILES if side == UPPER else LOWER_TILES
 
         for neighbour in neighbours:
             if neighbour in board.keys():
@@ -340,9 +372,10 @@ class RoPaSciState(object):
                 target_clockwise = (
                     target_r + DIRECTIONS[i - 1][R_INDEX], target_q + DIRECTIONS[i - 1][R_INDEX])
                 target_anticlockwise = (
-                    target_r + DIRECTIONS[0][R_INDEX], target_q + DIRECTIONS[0][Q_INDEX]) if i >= NUM_DIRECTIONS - 1 else (
+                    target_r + DIRECTIONS[0][R_INDEX],
+                    target_q + DIRECTIONS[0][Q_INDEX]) if i >= NUM_DIRECTIONS - 1 else (
                     target_r +
-                        DIRECTIONS[i + 1][R_INDEX], target_q +
+                    DIRECTIONS[i + 1][R_INDEX], target_q +
                     DIRECTIONS[i + 1][Q_INDEX]
                 )
 

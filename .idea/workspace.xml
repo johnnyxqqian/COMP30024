@@ -26,6 +26,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6ee40b64-5d12-4f84-b6dd-58f4c83b4cd4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a2/ninecommas/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/player.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,5 +74,11 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="521" y="368" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1620703075686">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="521" y="368" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1440.900@0.0.1440.900" timestamp="1620703075686" />
   </component>
 </project>
