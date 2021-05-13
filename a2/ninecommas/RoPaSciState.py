@@ -225,11 +225,11 @@ class RoPaSciState(object):
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
 
-        #boardkey = hash(frozenset(self.board.items()))
+        # boardkey = hash(frozenset(self.board.items()))
 
-        #if boardkey in self.board_history.keys():
+        # if boardkey in self.board_history.keys():
         #    self.board_history[boardkey] += 1
-        #else:
+        # else:
         #    self.board_history[boardkey] = 1
 
         # process player move
@@ -305,40 +305,46 @@ class RoPaSciState(object):
     def heuristic(self):
 
         # implicity determines if we've beat an enemy token
-        cost = 0
+        gain = 0
 
         # feature 1: # our emaining tokens
         # need to check if side is upper / lower case
-        cost += COST_LIVE_TOKEN * len(self.list_tokens(
-            "upper")) + (9-self.throws["upper"])
+        gain += COST_LIVE_TOKEN * len(self.list_tokens(
+            "upper")) + (9 - self.throws["upper"])
 
         # feature 2: # enemy tokens
-        cost -= COST_LIVE_TOKEN * len(self.list_tokens(
-            "lower")) + (9-self.throws["lower"])
+        gain -= COST_LIVE_TOKEN * len(self.list_tokens(
+            "lower")) + (9 - self.throws["lower"])
 
-        print("cost pre-matrix = ", cost)
+        print("cost pre-matrix = ", gain)
         # feature 3: distance of tokens from prey / predator
         pred = np.zeros((9, 9))
         i = j = 0
 
         for token, r, q in self.board_dict_to_iterable(self.list_tokens('upper')):
             j = 0
+            min_dist = 0
             for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens('lower')):
+
+
+                # least distance to beatable enemy token
+
+
                 if BEATS_WHAT[token.lower()] == target_t:
-                    pred[i][j] = self.hex_distance(
-                        (r, q), (target_r, target_q))
-                elif token == target_t:
+                    pred[i][j] = (1 / self.hex_distance(
+                        (r, q), (target_r, target_q)))
+                elif token.lower() == target_t:
                     pred[i][j] == 0
                 else:
-                    pred[i][j] = (-1)*self.hex_distance((r, q),
-                                                        (target_r, target_q))
+                    pred[i][j] = (-1) * (1 / self.hex_distance((r, q),
+                                                               (target_r, target_q)))
                 j += 1
             i += 1
-
+        # print(pred)
         # need to factor in throws increaing the cost
-        cost += np.sum(pred)
+        gain += np.sum(pred * 10 / (i + j))
 
-        print("cost post matrix - ", cost)
+        print("gain post matrix - ", gain)
 
         up_throws = 9 - self.throws["upper"]
         lo_throws = 9 - self.throws["lower"]
@@ -389,8 +395,8 @@ class RoPaSciState(object):
             return COST_WIN * (-1)
 
         # condition 4: the same state has occurred for a 3rd time
-#         if self.history[state] >= 3:
-#             return COST_DRAW
+        #         if self.history[state] >= 3:
+        #             return COST_DRAW
 
         # condition 5: the players have had their 360th turn without end
         if self.turn >= MAX_TURNS:
@@ -403,12 +409,12 @@ class RoPaSciState(object):
             side_flag = 1 if side == UPPER else -1
 
             # 1 invincible token
-            cost += COST_INVINC * \
-                side_flag if (len(up_invinc) == 1 and lo_throws == 0) else 0
+            gain += COST_INVINC * \
+                    side_flag if (len(up_invinc) == 1 and lo_throws == 0) else 0
 
             # 2 invincible tokens
-            cost += COST_DOUB_INVIC * \
-                side_flag if (len(invinc) == 2 and throws < 2) else 0
+            gain += COST_DOUB_INVIC * \
+                    side_flag if (len(invinc) == 2 and throws < 2) else 0
 
         # if enenmy neighbour, check if beatable
         # if friendly neighbour, increase cost
@@ -443,8 +449,8 @@ class RoPaSciState(object):
                             cost += 0
                     visited.add(neighbour)
             """
-        print(cost)
-        return cost
+        print("cost at end", gain)
+        return gain
 
     @staticmethod
     def has_friendly_tile(neighbours, side):
@@ -510,7 +516,7 @@ class RoPaSciState(object):
             throw_range = range(4 - 9 + self.throws[UPPER], +4 + 1)
 
         else:  # Side is lower
-            throw_range = range(-4, -4+10-self.throws[LOWER])
+            throw_range = range(-4, -4 + 10 - self.throws[LOWER])
 
         hex_range = range(-4, +4 + 1)
         possible_hexes = [

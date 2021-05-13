@@ -25,6 +25,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ee40b64-5d12-4f84-b6dd-58f4c83b4cd4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/9commas.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/9commas.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/consts.py" afterDir="false" />
@@ -46,8 +48,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/a2/ninecommas" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -75,19 +79,6 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="184" y="109" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1620705945225">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="184" y="109" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1620705945225" />
-    <state x="521" y="368" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1620703075686">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="521" y="368" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1440.900@0.0.1440.900" timestamp="1620703075686" />
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1620723509235">
-      <screen x="0" y="0" width="1440" height="900" />
-    </state>
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1620723509235" />
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

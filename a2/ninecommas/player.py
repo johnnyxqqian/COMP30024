@@ -1,6 +1,7 @@
 from .RoPaSciState import *
 from .consts import *
 from random import choice
+import sys
 
 
 class Player:
@@ -22,6 +23,7 @@ class Player:
 
         self._game = RoPaSciState()
         # put your code here
+
     """
     def minmax(self, state, moves, depth, side):
         # iterate through (move)
@@ -72,6 +74,72 @@ class Player:
     #           return max (value, func minimax)
     """
 
+    def min(self, alpha: int = -sys.maxsize, beta: int = sys.maxsize, depth: int = 0):
+        if (depth > MAX_DEPTH):
+            return self._game.heuristic()
+
+        for move in self.possible_moves():
+            beta = min(beta, max(alpha, beta, depth + 1))
+
+        if beta < alpha:
+            return alpha
+
+        return beta
+
+    def max(self, alpha: int = -sys.maxsize, beta: int = sys.maxsize, depth: int = 0):
+        # Variables
+
+        if (depth > MAX_DEPTH):
+            return self._game.heuristic()
+
+        poss_moves = self.possible_moves()
+
+        for move in poss_moves:
+            alpha = max(alpha, min(alpha, beta, depth + 1))
+
+        if alpha > beta:
+            return alpha
+
+        return beta
+
+    def mini_max(self):
+        best_val = 0
+        best_mov = None
+
+        # need enemy moves
+        for move in self.possible_moves():
+            val = self.minimax_value(move, 0)
+            # val = self.minimax_value(self.update(move1, move2), 0)
+            if val > best_val:
+                best_val = val
+                best_mov = move
+        return best_mov
+
+    def minimax_value(self, move, depth):
+        max_cost = 0
+        min_cost = 0
+
+        # cut-off
+        if depth > MAX_DEPTH:
+            return self._game.heurisitc()
+
+        # max = upper
+        # not sure if this makes sense
+        # not sure if this makes sense
+        elif self._side == UPPER:
+            for move in self.possible_moves():
+                cost = self.minimax_value(move, depth + 1)
+                if cost > max_cost:
+                    max_cost = cost
+            return max_cost
+
+        else:
+            for move in self.possible_moves():
+                cost = self.minimax_value(move, depth + 1)
+                if cost < min_cost:
+                    min_cost = cost
+            return min_cost
+
     def action(self):
         """
         Called at the beginning of each turn. Based on the current state
@@ -80,9 +148,13 @@ class Player:
 
         ### Generate all possible moves
         # Generate all swings and slides
+
+        return choice(self.possible_moves())
+
+    def possible_moves(self):
         possible_moves = []
         for t, r, q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side)):
-            legal_moves = self._game.list_legal_moves((r, q),self._side)
+            legal_moves = self._game.list_legal_moves((r, q), self._side)
             for legal_move in legal_moves:
                 move = (legal_move[0], (r, q), legal_move[1])
                 possible_moves.append(move)
@@ -97,7 +169,7 @@ class Player:
                 move = ("THROW", t.lower(), tile)
                 possible_moves.append(move)
 
-        return choice(possible_moves)
+        return possible_moves
 
     def update(self, opponent_action, player_action):
         """
@@ -112,10 +184,10 @@ class Player:
 
         self._game.take_turn(player_action, opponent_action, self._side)
         print(self._game.heuristic())
-        #print("board: ")
-        #self.print_board()
-        #self.print_board(self._game.list_tokens(UPPER))
-        #self.print_board(self._game.list_tokens(LOWER))
+        # print("board: ")
+        # self.print_board()
+        # self.print_board(self._game.list_tokens(UPPER))
+        # self.print_board(self._game.list_tokens(LOWER))
 
     def print_board(self, board_dict=None, message="", compact=True, ansi=False, **kwargs):
         """
