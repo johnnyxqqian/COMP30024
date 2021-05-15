@@ -302,96 +302,110 @@ class RoPaSciState(object):
                 coords, survivors = update
                 self._update(coords, survivors)
 
-    def heuristic(self):
+    def heuristic(self, side):
 
-        # implicity determines if we've beat an enemy token
-        gain = 0
 
-        # feature 1: # our emaining tokens
+        enemy = LOWER if side == UPPER else UPPER
+        payoff = 0
+
+        # feature 1: # our remaining tokens
         # need to check if side is upper / lower case
-        gain += COST_LIVE_TOKEN * len(self.list_tokens(
-            "upper")) + (9 - self.throws["upper"])
+        payoff += COST_LIVE_TOKEN * len(self.list_tokens(side)) + (9 - self.throws[side])
 
         # feature 2: # enemy tokens
-        gain -= COST_LIVE_TOKEN * len(self.list_tokens(
-            "lower")) + (9 - self.throws["lower"])
+        payoff -= COST_LIVE_TOKEN * len(self.list_tokens(enemy)) + (9 - self.throws[enemy])
 
-        print("cost pre-matrix = ", gain)
+        # print("cost pre-matrix = ", payoff)
         # feature 3: distance of tokens from prey / predator
         pred = np.zeros((9, 9))
         i = j = 0
 
-        for token, r, q in self.board_dict_to_iterable(self.list_tokens('upper')):
+        for token, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
             j = 0
-            min_dist = 0
-            for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens('lower')):
+            min_lose_dist = min_dist = 100000
+            e_token_index = lose_e_token_index = 0
 
+            for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens(enemy)):
 
                 # least distance to beatable enemy token
+                dist = self.hex_distance((r, q), (target_r, target_q))
+
+                if BEATS_WHAT[token.lower()] == target_t.lower():
+
+                    if dist < min_dist:
+                        min_dist = dist
+                        e_token_index = j
 
 
-                if BEATS_WHAT[token.lower()] == target_t:
-                    pred[i][j] = (1 / self.hex_distance(
-                        (r, q), (target_r, target_q)))
-                elif token.lower() == target_t:
+                elif token.lower() == target_t.lower():
                     pred[i][j] == 0
+
                 else:
-                    pred[i][j] = (-1) * (1 / self.hex_distance((r, q),
-                                                               (target_r, target_q)))
+
+                    if dist < min_lose_dist:
+                        min_lose_dist = dist
+                        lose_e_token_index = j
+
                 j += 1
+
+            pred[i][e_token_index] = 100 * (1 / min_dist)
+            pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
             i += 1
+
         # print(pred)
+        # print(np.sum(pred * 10 / (i + j)))
         # need to factor in throws increaing the cost
-        gain += np.sum(pred * 10 / (i + j))
+        payoff += np.sum(pred * 10 / (i + j))
 
-        print("gain post matrix - ", gain)
+        # print("payoff post matrix - ", payoff)
 
-        up_throws = 9 - self.throws["upper"]
-        lo_throws = 9 - self.throws["lower"]
+
+        p_throws = 9 - self.throws[side]
+        lo_throws = 9 - self.throws[enemy]
 
         # should this just be s?
-        up_tokens = [
+        p_tokens = [
             s.lower() for x in self.board.values() for s in x if s.isupper()
         ]
 
-        lo_tokens = [
+        e_tokens = [
             s for x in self.board.values() for s in x if s.islower()
         ]
 
-        up_symset = set(up_tokens)
-        lo_symset = set(lo_tokens)
+        p_symset = set(p_tokens)
+        e_symset = set(e_tokens)
 
-        up_invinc = [
-            s for s in up_symset
-            if (lo_throws == 0) and (WHAT_BEATS[s] not in lo_symset)
+        p_invinc = [
+            s for s in p_symset
+            if (lo_throws == 0) and (WHAT_BEATS[s] not in e_symset)
         ]
-        lo_invinc = [
-            s for s in lo_symset
-            if (up_throws == 0) and (WHAT_BEATS[s] not in up_symset)
+        e_invinc = [
+            s for s in e_symset
+            if (p_throws == 0) and (WHAT_BEATS[s] not in p_symset)
         ]
 
-        up_notoks = (up_throws == 0) and (len(up_tokens) == 0)
-        lo_notoks = (lo_throws == 0) and (len(lo_tokens) == 0)
-        up_onetok = (up_throws == 0) and (len(up_tokens) == 1)
-        lo_onetok = (lo_throws == 0) and (len(lo_tokens) == 1)
+        p_notoks = (p_throws == 0) and (len(p_tokens) == 0)
+        e_notoks = (lo_throws == 0) and (len(e_tokens) == 0)
+        p_onetok = (p_throws == 0) and (len(p_tokens) == 1)
+        e_onetok = (lo_throws == 0) and (len(e_tokens) == 1)
 
         # condition 1: one player has no remaining throws or tokens
-        if up_notoks and lo_notoks:
+        if p_notoks and e_notoks:
             return COST_DRAW
-        if up_notoks:
+        if p_notoks:
             return COST_WIN * (-1)
-        if lo_notoks:
+        if e_notoks:
             return COST_WIN
 
         # condition 2: both players have an invincible token
-        if up_invinc and lo_invinc:
+        if p_invinc and e_invinc:
             return COST_DRAW
 
         # condition 3: one player has an invincible token, the other has
         #              only one token remaining (not invincible by 2)
-        if up_invinc and lo_onetok:
+        if p_invinc and e_onetok:
             return COST_WIN
-        if lo_invinc and up_onetok:
+        if e_invinc and p_onetok:
             return COST_WIN * (-1)
 
         # condition 4: the same state has occurred for a 3rd time
@@ -402,25 +416,28 @@ class RoPaSciState(object):
         if self.turn >= MAX_TURNS:
             return COST_DRAW
 
+        """
         # feature 3: invincible tokens
         for side in ["upper", "lower"]:
-            invinc = up_invinc if side == UPPER else lo_invinc
-            throws = lo_throws if side == UPPER else up_throws
+            invinc = p_invinc if side == UPPER else e_invinc
+            throws = lo_throws if side == UPPER else p_throws
             side_flag = 1 if side == UPPER else -1
 
             # 1 invincible token
-            gain += COST_INVINC * \
-                    side_flag if (len(up_invinc) == 1 and lo_throws == 0) else 0
+            payoff += COST_INVINC * \
+                    side_flag if (len(p_invinc) == 1 and lo_throws == 0) else 0
 
             # 2 invincible tokens
-            gain += COST_DOUB_INVIC * \
+            payoff += COST_DOUB_INVIC * \
                     side_flag if (len(invinc) == 2 and throws < 2) else 0
 
         # if enenmy neighbour, check if beatable
         # if friendly neighbour, increase cost
         # to confirm with simon
 
-        """"
+        """
+
+        """
         visited=set()
         for token, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
             neighbours = neighbour_hexes((r, q))
@@ -449,8 +466,8 @@ class RoPaSciState(object):
                             cost += 0
                     visited.add(neighbour)
             """
-        print("cost at end", gain)
-        return gain
+        # print("cost at end", payoff)
+        return payoff
 
     @staticmethod
     def has_friendly_tile(neighbours, side):
@@ -523,6 +540,26 @@ class RoPaSciState(object):
             (r, q) for r in throw_range for q in hex_range if -r - q in hex_range]
 
         return possible_hexes
+
+    def possible_moves(self, side):
+        possible_moves = []
+        for t, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
+            legal_moves = self.list_legal_moves((r, q), side)
+            for legal_move in legal_moves:
+                move = (legal_move[0], (r, q), legal_move[1])
+                possible_moves.append(move)
+
+        if side == UPPER:
+            token_set = UPPER_TILES
+        else:
+            token_set = LOWER_TILES
+
+        for t in token_set:
+            for tile in self.possible_throws(side):
+                move = ("THROW", t.lower(), tile)
+                possible_moves.append(move)
+
+        return possible_moves
 
 
 def unit_test():

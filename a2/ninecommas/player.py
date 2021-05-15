@@ -2,6 +2,13 @@ from .RoPaSciState import *
 from .consts import *
 from random import choice
 import sys
+import numpy as np
+import scipy.optimize as opt
+import random
+
+
+class OptimisationError(Exception):
+    """For if the optimiser reports failure."""
 
 
 class Player:
@@ -74,6 +81,7 @@ class Player:
     #           return max (value, func minimax)
     """
 
+    """
     def min(self, alpha: int = -sys.maxsize, beta: int = sys.maxsize, depth: int = 0):
         if (depth > MAX_DEPTH):
             return self._game.heuristic()
@@ -107,15 +115,20 @@ class Player:
         best_mov = None
 
         # need enemy moves
-        for move in self.possible_moves():
-            val = self.minimax_value(move, 0)
-            # val = self.minimax_value(self.update(move1, move2), 0)
+
+        for move in self.possible_moves(self._side):
+            new_state = deepcopy(self._game)
+
+            # minimax of our move
+            val = self.minimax_value(new_state.take_turn(move, None, self._side), 0)
+
             if val > best_val:
                 best_val = val
                 best_mov = move
+
         return best_mov
 
-    def minimax_value(self, move, depth):
+    def minimax_value(self, move, depth, side):
         max_cost = 0
         min_cost = 0
 
@@ -126,6 +139,7 @@ class Player:
         # max = upper
         # not sure if this makes sense
         # not sure if this makes sense
+
         elif self._side == UPPER:
             for move in self.possible_moves():
                 cost = self.minimax_value(move, depth + 1)
@@ -139,6 +153,153 @@ class Player:
                 if cost < min_cost:
                     min_cost = cost
             return min_cost
+    """
+
+    def adverserial(self):
+
+        optimal_move_p, exp_value = self.backprop(self._game, 0)
+        print('optimal = ', optimal_move_p)
+        return optimal_move_p
+
+    def backprop(self, game=None, depth=0):
+
+        if depth > MAX_DEPTH:
+            temp = 1 if self._side == UPPER else -1
+            return None, self._game.heuristic(self._side) * temp
+
+        enemy_side = "upper" if self._side == LOWER else LOWER
+        # possible moves for player & enemy
+        # player_moves = random.sample(game.possible_moves(self._side), 5)
+        possible_player_moves = game.possible_moves(self._side)
+        # player_moves = random.sample(possible_player_moves, len(possible_player_moves))
+        player_moves = possible_player_moves
+        random.shuffle(player_moves)
+
+        # print("moves = ", player_moves)
+        possible_enemy_moves = game.possible_moves(enemy_side)
+        enemy_moves = random.sample(possible_enemy_moves, min(len(possible_enemy_moves), 5))
+
+        payoff_matrix = np.zeros((len(player_moves), len(enemy_moves)))
+
+        i = 0
+        for p_moves in player_moves:
+            j = 0
+            if i < 10:
+                # replace with limiting branching factor
+                for e_moves in enemy_moves:
+
+                    if j < 10:
+                        new_state = deepcopy(game)
+                        new_state.take_turn(p_moves, e_moves, self._side)
+                        a, payoff = self.backprop(new_state, depth + 1)
+                        payoff_matrix[i][j] = payoff
+
+                        j += 1
+                    else:
+                        break
+
+                i += 1
+
+        moves, expected_value = self.solve_game(payoff_matrix)
+
+        move_index_p = np.where(moves == np.amax(moves))[0][0]
+        bmove_player = player_moves[move_index_p]
+        # move_index_e = np.where(payoff_matrix == np.amin(payoff_matrix[move_index_p]))[0][0]
+        # bmove_enemy = enemy_moves[move_index_e]
+
+        # print("player best = ", bmove_player, "exp = ", expected_value, "depth = ", depth, "pmoves = ",
+        #   len(player_moves), "emoves = ", len(enemy_moves))
+        # print("Shape = ", payoff_matrix.shape)
+
+        return bmove_player, expected_value
+
+    """
+
+    def select_move(self):
+        payoff_matrix = np.zeros((self._game.turn, self._game.turn))
+        enemy_side = "upper" if self._side == LOWER else LOWER
+
+        # possible moves for player & enemy
+        player_moves = self.possible_moves(self._side)
+        enemy_moves = self.possible_moves(enemy_side)
+
+        # (n,m) matrix of moves
+        i = 0
+        for p_moves in player_moves:
+            j = 0
+            for e_moves in enemy_moves:
+                new_state = deepcopy(self._game)
+                new_state.take_turn(p_moves, e_moves, self._side)
+                payoff = new_state.heuristic()
+                payoff_matrix[i][j] = payoff
+                j += 1
+            i += 1
+
+        moves, expected_value = self.solve_game(payoff_matrix)
+
+        move_index_p = np.amax(moves)
+        bmove_player = player_moves[move_index_p]
+        move_index_e = np.amin(payoff_matrix[move_index_p])
+        bmove_enemy = enemy_moves[move_index_e]
+
+        return bmove_player, bmove_enemy, expected_value
+
+    """
+
+    def solve_game(self, V, maximiser=True, rowplayer=True):
+        """
+        Given a utility matrix V for a zero-sum game, compute a mixed-strategy
+        security strategy/Nash equilibrium solution along with the bound on the
+        expected value of the game to the player.
+        By default, assume the player is the MAXIMISER and chooses the ROW of V,
+        and the opponent is the MINIMISER choosing the COLUMN. Use the flags to
+        change this behaviour.
+
+        Parameters
+        ----------
+        * V: (n, m)-array or array-like; utility/payoff matrix;
+        * maximiser: bool (default True); compute strategy for the maximiser.
+            Set False to play as the minimiser.
+        * rowplayer: bool (default True); compute strategy for the row-chooser.
+            Set False to play as the column-chooser.
+
+        Returns
+        -------
+        * s: (n,)-array; probability vector; an equilibrium mixed strategy over
+            the rows (or columns) ensuring expected value v.
+        * v: float; mixed security level / guaranteed minimum (or maximum)
+            expected value of the equilibrium mixed strategy.
+
+        Exceptions
+        ----------
+        * OptimisationError: If the optimisation reports failure. The message
+            from the optimiser will accompany this exception.
+        """
+        V = np.asarray(V)
+        # lprog will solve for the column-maximiser
+        if rowplayer:
+            V = V.T
+        if not maximiser:
+            V = -V
+        m, n = V.shape
+        # ensure positive
+        c = -V.min() + 1
+        Vpos = V + c
+        # solve linear program
+        res = opt.linprog(
+            np.ones(n),
+            A_ub=-Vpos,
+            b_ub=-np.ones(m),
+        )
+        if res.status:
+            raise OptimisationError(res.message)  # TODO: propagate whole result
+        # compute strategy and value
+        v = 1 / res.x.sum()
+        s = res.x * v
+        v = v - c  # re-scale
+        if not maximiser:
+            v = -v
+        return s, v
 
     def action(self):
         """
@@ -149,9 +310,10 @@ class Player:
         ### Generate all possible moves
         # Generate all swings and slides
 
-        return choice(self.possible_moves())
+        return self.adverserial()
 
-    def possible_moves(self):
+    """
+    def possible_moves(self, side):
         possible_moves = []
         for t, r, q in self._game.board_dict_to_iterable(self._game.list_tokens(self._side)):
             legal_moves = self._game.list_legal_moves((r, q), self._side)
@@ -159,7 +321,7 @@ class Player:
                 move = (legal_move[0], (r, q), legal_move[1])
                 possible_moves.append(move)
 
-        if self._side == UPPER:
+        if side == UPPER:
             token_set = UPPER_TILES
         else:
             token_set = LOWER_TILES
@@ -169,7 +331,9 @@ class Player:
                 move = ("THROW", t.lower(), tile)
                 possible_moves.append(move)
 
-        return possible_moves
+        return
+
+    """
 
     def update(self, opponent_action, player_action):
         """
@@ -183,7 +347,7 @@ class Player:
         # player actions in the form:
 
         self._game.take_turn(player_action, opponent_action, self._side)
-        print(self._game.heuristic())
+        print(self._game.heuristic(self._side))
         # print("board: ")
         # self.print_board()
         # self.print_board(self._game.list_tokens(UPPER))
