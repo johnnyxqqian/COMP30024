@@ -303,17 +303,22 @@ class RoPaSciState(object):
                 self._update(coords, survivors)
 
     def heuristic(self, side):
-
+        """
+        Gives us the heuristic value for the given side. Higher = Better for the passed in side, Lower = Worse
+        """
 
         enemy = LOWER if side == UPPER else UPPER
         payoff = 0
 
         # feature 1: # our remaining tokens
-        # need to check if side is upper / lower case
-        payoff += COST_LIVE_TOKEN * len(self.list_tokens(side)) + (9 - self.throws[side])
+
+        # A throw is more valuable than a token on board
+        payoff += COST_SELF_TOKEN * len(self.list_tokens(side))
+        payoff += COST_THROW_TOKEN * self.throws[side]
 
         # feature 2: # enemy tokens
-        payoff -= COST_LIVE_TOKEN * len(self.list_tokens(enemy)) + (9 - self.throws[enemy])
+        payoff -= COST_ENEMY_TOKEN * len(self.list_tokens(enemy))
+        payoff -= COST_THROW_TOKEN * self.throws[enemy]
 
         # print("cost pre-matrix = ", payoff)
         # feature 3: distance of tokens from prey / predator
@@ -348,14 +353,14 @@ class RoPaSciState(object):
 
                 j += 1
 
-            pred[i][e_token_index] = 100 * (1 / min_dist)
+            pred[i][e_token_index] = 1 * (1 / min_dist)
             pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
             i += 1
 
         # print(pred)
         # print(np.sum(pred * 10 / (i + j)))
         # need to factor in throws increaing the cost
-        payoff += np.sum(pred * 10 / (i + j))
+        payoff += np.sum(pred * 10)
 
         # print("payoff post matrix - ", payoff)
 

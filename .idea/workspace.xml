@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -25,7 +28,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ee40b64-5d12-4f84-b6dd-58f4c83b4cd4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/consts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/player.py" afterDir="false" />
@@ -78,5 +80,11 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="945" y="331" width="670" height="676" key="search.everywhere.popup" timestamp="1621085438512">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="945" y="331" width="670" height="676" key="search.everywhere.popup/-1440.405.1440.900/0.0.2560.1440@0.0.2560.1440" timestamp="1621085438512" />
   </component>
 </project>

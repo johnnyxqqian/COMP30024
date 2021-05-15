@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import scipy.optimize as opt
 import random
+import time
 
 
 class OptimisationError(Exception):
@@ -309,8 +310,20 @@ class Player:
 
         ### Generate all possible moves
         # Generate all swings and slides
+        max_heur = -1000000
+        max_move = None
+        for possible_move in self._game.possible_moves(self._side):
+            new_state = deepcopy(self._game)
+            new_state.take_turn(possible_move, None, self._side)
+            val = new_state.heuristic(self._side)
+            if val > max_heur:
+                max_move = possible_move
+                max_heur = val
 
-        return self.adverserial()
+        return max_move
+
+
+        #return self.adverserial()
 
     """
     def possible_moves(self, side):
