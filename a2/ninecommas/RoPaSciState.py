@@ -357,8 +357,8 @@ class RoPaSciState(object):
             pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
             i += 1
 
-        # print(pred)
-        # print(np.sum(pred * 10 / (i + j)))
+        #print(pred)
+        print(np.sum(pred * 5))
         # need to factor in throws increaing the cost
         payoff += np.sum(pred * 5)
 

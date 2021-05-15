@@ -29,6 +29,8 @@ class Player:
         else:
             self._opponent = UPPER
 
+        print(f"Game passed in {player} side, we assigned {self._side} as us, and {self._opponent} as opponent ")
+
         self._game = RoPaSciState()
         # put your code here
 
