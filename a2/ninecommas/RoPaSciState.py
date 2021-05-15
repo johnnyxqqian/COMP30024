@@ -360,7 +360,9 @@ class RoPaSciState(object):
         # print(pred)
         # print(np.sum(pred * 10 / (i + j)))
         # need to factor in throws increaing the cost
-        payoff += np.sum(pred * 10)
+        payoff += np.sum(pred * 5)
+
+        return payoff
 
         # print("payoff post matrix - ", payoff)
 
@@ -542,7 +544,7 @@ class RoPaSciState(object):
 
         hex_range = range(-4, +4 + 1)
         possible_hexes = [
-            (r, q) for r in throw_range for q in hex_range if -r - q in hex_range]
+            (r, q) for r in throw_range for q in hex_range if self.within_board((r,q))]
 
         return possible_hexes
 

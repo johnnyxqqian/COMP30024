@@ -311,17 +311,21 @@ class Player:
         ### Generate all possible moves
         # Generate all swings and slides
         max_heur = -1000000
-        max_move = None
+        max_moves = []
         for possible_move in self._game.possible_moves(self._side):
             new_state = deepcopy(self._game)
             new_state.take_turn(possible_move, None, self._side)
             val = new_state.heuristic(self._side)
             if val > max_heur:
-                max_move = possible_move
+                max_moves = []
+                max_moves.append(possible_move)
                 max_heur = val
 
-        return max_move
+            elif val == max_heur:
+                max_moves.append(possible_move)
 
+
+        return choice(max_moves)
 
         #return self.adverserial()
 
