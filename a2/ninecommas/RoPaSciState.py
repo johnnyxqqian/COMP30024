@@ -314,12 +314,11 @@ class RoPaSciState(object):
 
         # A throw is more valuable than a token on board
         payoff += COST_SELF_TOKEN * len(self.list_tokens(side))
-        payoff += COST_THROW_TOKEN * self.throws[side]
+        payoff += COST_THROW_TOKEN * (self.throws[side])
 
         # feature 2: # enemy tokens
         payoff -= COST_ENEMY_TOKEN * len(self.list_tokens(enemy))
-        payoff -= COST_THROW_TOKEN * self.throws[enemy]
-
+        payoff -= COST_THROW_TOKEN * (self.throws[enemy])
         # print("cost pre-matrix = ", payoff)
         # feature 3: distance of tokens from prey / predator
         pred = np.zeros((9, 9))
@@ -329,6 +328,7 @@ class RoPaSciState(object):
             j = 0
             min_lose_dist = min_dist = 100000
             e_token_index = lose_e_token_index = 0
+            bflag = lflag = False
 
             for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens(enemy)):
 
@@ -336,29 +336,31 @@ class RoPaSciState(object):
                 dist = self.hex_distance((r, q), (target_r, target_q))
 
                 if BEATS_WHAT[token.lower()] == target_t.lower():
-
+                    bflag = True
                     if dist < min_dist:
                         min_dist = dist
                         e_token_index = j
-
 
                 elif token.lower() == target_t.lower():
                     pred[i][j] == 0
 
                 else:
+                    lflag = True
 
                     if dist < min_lose_dist:
                         min_lose_dist = dist
                         lose_e_token_index = j
-
                 j += 1
+                if j==9:
+                    print("Aaaaaaaaaa, no tokes = ", len(self.board_dict_to_iterable(self.list_tokens(enemy))))
+                    print(self.board_dict_to_iterable(self.list_tokens(enemy)))
 
-            pred[i][e_token_index] = 1 * (1 / min_dist)
-            pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
+            pred[i][e_token_index] = 1 * (1 / min_dist) if bflag else 0
+            pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist) if lflag else 0
             i += 1
 
-        #print(pred)
-        print(np.sum(pred * 5))
+        # print(pred)
+        print("pred = ", np.sum(pred * 5))
         # need to factor in throws increaing the cost
         payoff += np.sum(pred * 5)
 
