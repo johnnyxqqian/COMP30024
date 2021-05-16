@@ -363,7 +363,9 @@ class RoPaSciState(object):
                 pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
 
         #print("pred2")
-        #print(pred)
+        if debug:
+            for row in pred:
+                print(row)
 
         #if debug:
         #    print("pred/prey")
@@ -371,7 +373,7 @@ class RoPaSciState(object):
         #    print(pred[i][lose_e_token_index])
 
         # need to factor in throws increaing the cost
-        payoff += np.sum(pred * 5)
+        payoff += np.sum(pred * 9)
 
         # print("payoff post matrix - ", payoff)
 
@@ -379,13 +381,23 @@ class RoPaSciState(object):
         e_throws = 9 - self.throws[enemy]
 
         # should this just be s?
-        p_tokens = [
-            s.lower() for x in self.board.values() for s in x if s.isupper()
-        ]
+        if side == UPPER:
+            p_tokens = [
+                s.lower() for x in self.board.values() for s in x if s.isupper()
+            ]
 
-        e_tokens = [
-            s for x in self.board.values() for s in x if s.islower()
-        ]
+            e_tokens = [
+                s for x in self.board.values() for s in x if s.islower()
+            ]
+
+        else:
+            e_tokens = [
+                s.lower() for x in self.board.values() for s in x if s.isupper()
+            ]
+
+            p_tokens = [
+                s for x in self.board.values() for s in x if s.islower()
+            ]
 
         p_symset = set(p_tokens)
         e_symset = set(e_tokens)
