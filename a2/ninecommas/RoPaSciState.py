@@ -10,6 +10,7 @@ Xue Qiang Qian 1081725
 from copy import deepcopy
 from .consts import *
 import numpy as np
+import collections
 
 
 class RoPaSciState(object):
@@ -22,7 +23,7 @@ class RoPaSciState(object):
         self.board = board
         self.turn = turn
         self.throws = {UPPER: 9, LOWER: 9}
-        self.board_history = {}
+        self.board_history = collections.Counter({tuple(self.board_dict_to_iterable(self.board)): 1})
 
     def _insert(self, coords, token):
         """
@@ -225,13 +226,6 @@ class RoPaSciState(object):
         # slide/swings in the form (atype, (ra, qa), (rb, qb))
         self.turn += 1
 
-        # boardkey = hash(frozenset(self.board.items()))
-
-        # if boardkey in self.board_history.keys():
-        #    self.board_history[boardkey] += 1
-        # else:
-        #    self.board_history[boardkey] = 1
-
         # process player move
         if player_side == UPPER:
             to_player_case = str.upper
@@ -264,6 +258,8 @@ class RoPaSciState(object):
                                 self.list_tokens(opp_side)[opponent_move[1]][0])
 
         self.resolve_battles()
+
+        self.board_history[tuple(self.board_dict_to_iterable(self.board))] += 1
 
     def list_legal_moves(self, base_hex, side):
         """
@@ -302,7 +298,7 @@ class RoPaSciState(object):
                 coords, survivors = update
                 self._update(coords, survivors)
 
-    def heuristic(self, side):
+    def heuristic(self, side, debug=False):
         """
         Gives us the heuristic value for the given side. Higher = Better for the passed in side, Lower = Worse
         """
@@ -322,53 +318,69 @@ class RoPaSciState(object):
 
         # print("cost pre-matrix = ", payoff)
         # feature 3: distance of tokens from prey / predator
-        pred = np.zeros((9, 9))
-        i = j = 0
 
-        for token, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
-            j = 0
-            min_lose_dist = min_dist = 100000
-            e_token_index = lose_e_token_index = 0
+        p_tokens = self.board_dict_to_iterable(self.list_tokens(side))
+        e_tokens = self.board_dict_to_iterable(self.list_tokens(enemy))
 
-            for target_t, target_r, target_q in self.board_dict_to_iterable(self.list_tokens(enemy)):
+        pred = [[0 for _ in range(len(e_tokens)+1)] for _ in range(len(p_tokens)+1)]
 
-                # least distance to beatable enemy token
+        if debug:
+            print(self.board)
+
+        for i, (token, r, q) in enumerate(p_tokens):
+            min_lose_dist = 10000000
+            min_dist = 10000000
+            e_token_index = None
+            lose_e_token_index = None
+
+            for j, (target_t, target_r, target_q) in enumerate(e_tokens):
+
+                # least distance to enemy token
                 dist = self.hex_distance((r, q), (target_r, target_q))
 
+                # if our token can beat theirs
                 if BEATS_WHAT[token.lower()] == target_t.lower():
-
+                    # assign the distance as the new minimum distance, record index
                     if dist < min_dist:
                         min_dist = dist
                         e_token_index = j
 
-
+                # if our tokens are same, no value
                 elif token.lower() == target_t.lower():
                     pred[i][j] == 0
 
+                # if their token beats ours
                 else:
-
                     if dist < min_lose_dist:
                         min_lose_dist = dist
                         lose_e_token_index = j
 
-                j += 1
 
-            pred[i][e_token_index] = 1 * (1 / min_dist)
-            pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
-            i += 1
 
+            if e_token_index is not None:
+                pred[i][e_token_index] = 1 * (1 / min_dist)
+            if lose_e_token_index is not None:
+                pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
+
+
+
+        #print("pred2")
         #print(pred)
-        print(np.sum(pred * 5))
+
+        #if debug:
+        #    print("pred/prey")
+        #    print(pred[i][e_token_index])
+        #    print(pred[i][lose_e_token_index])
+
         # need to factor in throws increaing the cost
         payoff += np.sum(pred * 5)
 
-        return payoff
 
         # print("payoff post matrix - ", payoff)
 
 
         p_throws = 9 - self.throws[side]
-        lo_throws = 9 - self.throws[enemy]
+        e_throws = 9 - self.throws[enemy]
 
         # should this just be s?
         p_tokens = [
@@ -384,17 +396,26 @@ class RoPaSciState(object):
 
         p_invinc = [
             s for s in p_symset
-            if (lo_throws == 0) and (WHAT_BEATS[s] not in e_symset)
+            if (e_throws == 0) and (WHAT_BEATS[s] not in e_symset)
         ]
         e_invinc = [
             s for s in e_symset
             if (p_throws == 0) and (WHAT_BEATS[s] not in p_symset)
         ]
 
+        p_invinc_board = [
+            s for s in p_symset
+            if (WHAT_BEATS[s] not in e_symset)
+        ]
+        e_invinc_board = [
+            s for s in e_symset
+            if (WHAT_BEATS[s] not in p_symset)
+        ]
+
         p_notoks = (p_throws == 0) and (len(p_tokens) == 0)
-        e_notoks = (lo_throws == 0) and (len(e_tokens) == 0)
+        e_notoks = (e_throws == 0) and (len(e_tokens) == 0)
         p_onetok = (p_throws == 0) and (len(p_tokens) == 1)
-        e_onetok = (lo_throws == 0) and (len(e_tokens) == 1)
+        e_onetok = (e_throws == 0) and (len(e_tokens) == 1)
 
         # condition 1: one player has no remaining throws or tokens
         if p_notoks and e_notoks:
@@ -415,64 +436,20 @@ class RoPaSciState(object):
         if e_invinc and p_onetok:
             return COST_WIN * (-1)
 
-        # condition 4: the same state has occurred for a 3rd time
-        #         if self.history[state] >= 3:
-        #             return COST_DRAW
+        #condition 4: the same state has occurred for a 3rd time
+        if self.board_history[tuple(self.board_dict_to_iterable(self.board))] > 2:
+            return COST_DRAW
 
         # condition 5: the players have had their 360th turn without end
         if self.turn >= MAX_TURNS:
             return COST_DRAW
 
-        """
-        # feature 3: invincible tokens
-        for side in ["upper", "lower"]:
-            invinc = p_invinc if side == UPPER else e_invinc
-            throws = lo_throws if side == UPPER else p_throws
-            side_flag = 1 if side == UPPER else -1
+        if e_invinc_board:
+            payoff -= 30
+        elif p_invinc_board:
+            payoff += 30
 
-            # 1 invincible token
-            payoff += COST_INVINC * \
-                    side_flag if (len(p_invinc) == 1 and lo_throws == 0) else 0
 
-            # 2 invincible tokens
-            payoff += COST_DOUB_INVIC * \
-                    side_flag if (len(invinc) == 2 and throws < 2) else 0
-
-        # if enenmy neighbour, check if beatable
-        # if friendly neighbour, increase cost
-        # to confirm with simon
-
-        """
-
-        """
-        visited=set()
-        for token, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
-            neighbours = neighbour_hexes((r, q))
-            neighbourset = set()
-            for neighbour in neighbours:
-                if neighbour in board_state.board.keys() and neighbour not in visited:
-
-                    # friendly token
-                    if token.isupper() and self.board[neighbour].isupper():
-                        cost += COST_FRIENDLY_NEIGHBOUR
-                    elif token.islower() and self.board[neighbour].islower():
-                        cost -= COST_FRIENDLY_NEIGHBOUR
-
-                    # enemy token
-                    else:
-                        # enemy neighbour we can lose to
-                        if _WHAT_BEATS[token] == self.board[neighbour].lower():
-                            cost -= COST_BNEIGHBOUR * side_flag
-
-                        # enemy neighbour we can beat
-                        elif _BEATS_WHAT[token] == self.sate.board[neighbour].lower():
-                            cost += COST_GNEIGHBOUR * side_flag
-
-                        # enemy neighbour is the same token
-                        else:
-                            cost += 0
-                    visited.add(neighbour)
-            """
         # print("cost at end", payoff)
         return payoff
 
@@ -570,11 +547,19 @@ class RoPaSciState(object):
 
 
 def unit_test():
-    board = {(1, 2): ['R'],
-             (2, 2): ['P'],
-             (0, 1): ['s']}
+    board = {(0, 1): ['R'],
+             (1, 0): ['P'],
+             (-1, 0): ['S'],
+             (0, -1): ['R'],
+             (0, 2): ['p'],
+             (3, 0): ['s'],
+             }
+
     game = RoPaSciState(board=board)
 
-    # print(game.heuristic())
+    print(game.heuristic(UPPER))
+    print(game.heuristic(LOWER))
 
     # print("DEBUG"
+
+unit_test()

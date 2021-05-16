@@ -28,7 +28,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ee40b64-5d12-4f84-b6dd-58f4c83b4cd4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/9commas.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/9commas.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/consts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/player.py" afterDir="false" />
     </list>
@@ -58,6 +61,34 @@
       <recent name="$PROJECT_DIR$/a2/ninecommas" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="RoPaSciState" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="9commas" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/a2/ninecommas" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.RoPaSciState" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -82,6 +113,30 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="744" y="379" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1621140610102">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="744" y="379" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1440.405.1440.900/0.0.2560.1440@0.0.2560.1440" timestamp="1621140610102" />
+    <state width="2539" height="698" key="GridCell.Tab.0.bottom" timestamp="1621147720559">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2539" height="698" key="GridCell.Tab.0.bottom/-1440.405.1440.900/0.0.2560.1440@0.0.2560.1440" timestamp="1621147502547" />
+    <state width="2539" height="698" key="GridCell.Tab.0.bottom/-1440.430.1440.875/0.0.2560.1440@0.0.2560.1440" timestamp="1621147720559" />
+    <state width="2539" height="698" key="GridCell.Tab.0.center" timestamp="1621147720557">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2539" height="698" key="GridCell.Tab.0.center/-1440.405.1440.900/0.0.2560.1440@0.0.2560.1440" timestamp="1621147502546" />
+    <state width="2539" height="698" key="GridCell.Tab.0.center/-1440.430.1440.875/0.0.2560.1440@0.0.2560.1440" timestamp="1621147720557" />
+    <state width="2539" height="698" key="GridCell.Tab.0.left" timestamp="1621147720557">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2539" height="698" key="GridCell.Tab.0.left/-1440.405.1440.900/0.0.2560.1440@0.0.2560.1440" timestamp="1621147502545" />
+    <state width="2539" height="698" key="GridCell.Tab.0.left/-1440.430.1440.875/0.0.2560.1440@0.0.2560.1440" timestamp="1621147720557" />
+    <state width="2539" height="698" key="GridCell.Tab.0.right" timestamp="1621147720558">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="2539" height="698" key="GridCell.Tab.0.right/-1440.405.1440.900/0.0.2560.1440@0.0.2560.1440" timestamp="1621147502546" />
+    <state width="2539" height="698" key="GridCell.Tab.0.right/-1440.430.1440.875/0.0.2560.1440@0.0.2560.1440" timestamp="1621147720558" />
     <state x="945" y="331" width="670" height="676" key="search.everywhere.popup" timestamp="1621090792936">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>

@@ -314,10 +314,13 @@ class Player:
         # Generate all swings and slides
         max_heur = -1000000
         max_moves = []
+
         for possible_move in self._game.possible_moves(self._side):
+
             new_state = deepcopy(self._game)
             new_state.take_turn(possible_move, None, self._side)
             val = new_state.heuristic(self._side)
+
             if val > max_heur:
                 max_moves = []
                 max_moves.append(possible_move)
@@ -328,6 +331,7 @@ class Player:
 
 
         return choice(max_moves)
+
 
         #return self.adverserial()
 
@@ -366,7 +370,7 @@ class Player:
         # player actions in the form:
 
         self._game.take_turn(player_action, opponent_action, self._side)
-        print(self._game.heuristic(self._side))
+        print(self._game.heuristic(self._side,debug=True))
         # print("board: ")
         # self.print_board()
         # self.print_board(self._game.list_tokens(UPPER))
