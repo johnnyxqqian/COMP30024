@@ -32,8 +32,11 @@
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/RoPaSciState.py" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/consts.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/consts.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a2/ninecommas/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/a2/ninecommas/player.py" afterDir="false" />
+=======
+>>>>>>> 8d88ad07570c58a07e46001787e52e012dffccb0
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -310,12 +310,11 @@ class RoPaSciState(object):
 
         # A throw is more valuable than a token on board
         payoff += COST_SELF_TOKEN * len(self.list_tokens(side))
-        payoff += COST_THROW_TOKEN * self.throws[side]
+        payoff += COST_THROW_TOKEN * (self.throws[side])
 
         # feature 2: # enemy tokens
         payoff -= COST_ENEMY_TOKEN * len(self.list_tokens(enemy))
-        payoff -= COST_THROW_TOKEN * self.throws[enemy]
-
+        payoff -= COST_THROW_TOKEN * (self.throws[enemy])
         # print("cost pre-matrix = ", payoff)
         # feature 3: distance of tokens from prey / predator
 
@@ -340,12 +339,15 @@ class RoPaSciState(object):
 
                 # if our token can beat theirs
                 if BEATS_WHAT[token.lower()] == target_t.lower():
+
                     # assign the distance as the new minimum distance, record index
+
                     if dist < min_dist:
                         min_dist = dist
                         e_token_index = j
 
                 # if our tokens are same, no value
+
                 elif token.lower() == target_t.lower():
                     pred[i][j] == 0
 
@@ -355,14 +357,10 @@ class RoPaSciState(object):
                         min_lose_dist = dist
                         lose_e_token_index = j
 
-
-
             if e_token_index is not None:
                 pred[i][e_token_index] = 1 * (1 / min_dist)
             if lose_e_token_index is not None:
                 pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
-
-
 
         #print("pred2")
         #print(pred)
@@ -375,9 +373,7 @@ class RoPaSciState(object):
         # need to factor in throws increaing the cost
         payoff += np.sum(pred * 5)
 
-
         # print("payoff post matrix - ", payoff)
-
 
         p_throws = 9 - self.throws[side]
         e_throws = 9 - self.throws[enemy]
@@ -448,7 +444,6 @@ class RoPaSciState(object):
             payoff -= 30
         elif p_invinc_board:
             payoff += 30
-
 
         # print("cost at end", payoff)
         return payoff
