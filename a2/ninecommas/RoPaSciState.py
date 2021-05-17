@@ -192,7 +192,7 @@ class RoPaSciState(object):
         """
         Function returning all tiles that are legal board coordinates
         """
-        self.cost = self.heuristic()
+        self.cost = self.evaluation()
 
     def is_legal_slide(self, base, target):
         """
@@ -298,9 +298,10 @@ class RoPaSciState(object):
                 coords, survivors = update
                 self._update(coords, survivors)
 
-    def heuristic(self, side, debug=False):
+    def evaluation(self, side, debug=False):
         """
-        Gives us the heuristic value for the given side. Higher = Better for the passed in side, Lower = Worse
+        Evaluates the current board state for the given side.
+        Higher = Better for the passed in side, Lower = Worse
         """
 
         enemy = LOWER if side == UPPER else UPPER
@@ -321,7 +322,7 @@ class RoPaSciState(object):
         p_tokens = self.board_dict_to_iterable(self.list_tokens(side))
         e_tokens = self.board_dict_to_iterable(self.list_tokens(enemy))
 
-        pred = [[0 for _ in range(len(e_tokens)+1)] for _ in range(len(p_tokens)+1)]
+        pred = [[0 for _ in range(len(e_tokens) + 1)] for _ in range(len(p_tokens) + 1)]
 
         if debug:
             print(self.board)
@@ -362,12 +363,12 @@ class RoPaSciState(object):
             if lose_e_token_index is not None:
                 pred[i][lose_e_token_index] = (-1) * (1 / min_lose_dist)
 
-        #print("pred2")
+        # print("pred2")
         if debug:
             for row in pred:
                 print(row)
 
-        #if debug:
+        # if debug:
         #    print("pred/prey")
         #    print(pred[i][e_token_index])
         #    print(pred[i][lose_e_token_index])
@@ -444,7 +445,7 @@ class RoPaSciState(object):
         if e_invinc and p_onetok:
             return COST_WIN * (-1)
 
-        #condition 4: the same state has occurred for a 3rd time
+        # condition 4: the same state has occurred for a 3rd time
         if self.board_history[tuple(self.board_dict_to_iterable(self.board))] > 2:
             return COST_DRAW
 
@@ -453,15 +454,19 @@ class RoPaSciState(object):
             return COST_DRAW
 
         if e_invinc_board:
-            payoff -= 30
+            payoff -= COST_INVINC
         elif p_invinc_board:
-            payoff += 30
+            payoff += COST_INVINC
 
         # print("cost at end", payoff)
         return payoff
 
     @staticmethod
     def has_friendly_tile(neighbours, side):
+        """
+        Determines whether there are friendly tiles
+        """
+
         tile_set = UPPER_TILES if side == UPPER else LOWER_TILES
         for tiles in neighbours:
             if tiles in tile_set:
@@ -470,6 +475,9 @@ class RoPaSciState(object):
 
     # identifies swingable & landable tiles
     def swingable_hex_check(self, current_tile, board, neighbours, side):
+        """
+        Returns all possible tiles that may be swung to
+        """
         target_tiles = []
         tile_set = UPPER_TILES if side == UPPER else LOWER_TILES
 
@@ -485,10 +493,12 @@ class RoPaSciState(object):
 
         return list(set(target_tiles))
 
-    # returns 3-tuple of target tiles resulting from a swing
-    # does not check if tuples are valid
+
     @staticmethod
     def target_hex_coordinates(base_tile, target_tile):
+        """
+        Returns a 3-tuple of target tiles resulting from a swing
+        """
         base_q = base_tile[Q_INDEX]
         base_r = base_tile[R_INDEX]
         target_q = target_tile[Q_INDEX]
@@ -517,6 +527,9 @@ class RoPaSciState(object):
             return [target_anchor, target_clockwise, target_anticlockwise]
 
     def possible_throws(self, side):
+        """
+        Returns all possible throws for a side
+        """
         if self.throws[side] == 0:
             return []
 
@@ -528,11 +541,14 @@ class RoPaSciState(object):
 
         hex_range = range(-4, +4 + 1)
         possible_hexes = [
-            (r, q) for r in throw_range for q in hex_range if self.within_board((r,q))]
+            (r, q) for r in throw_range for q in hex_range if self.within_board((r, q))]
 
         return possible_hexes
 
     def possible_moves(self, side):
+        """
+        Returns all possible moves for a side
+        """
         possible_moves = []
         for t, r, q in self.board_dict_to_iterable(self.list_tokens(side)):
             legal_moves = self.list_legal_moves((r, q), side)
@@ -564,9 +580,10 @@ def unit_test():
 
     game = RoPaSciState(board=board)
 
-    print(game.heuristic(UPPER))
-    print(game.heuristic(LOWER))
+    print(game.evaluation(UPPER))
+    print(game.evaluation(LOWER))
 
     # print("DEBUG"
+
 
 unit_test()

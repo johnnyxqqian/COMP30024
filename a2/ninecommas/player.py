@@ -1,13 +1,10 @@
 from math import inf
+from random import choice
+
+import scipy.optimize as opt
 
 from .RoPaSciState import *
 from .consts import *
-from random import choice
-import sys
-import numpy as np
-import scipy.optimize as opt
-import random
-import time
 
 
 class OptimisationError(Exception):
@@ -36,199 +33,30 @@ class Player:
         self._game = RoPaSciState()
         # put your code here
 
-    """
-    def minmax(self, state, moves, depth, side):
-        # iterate through (move)
-
-        if depth == 0:
-            value = state.heuristic()
-            return value
-
-        # Generate possible moves
-        for possible_move in moves:
-
-            # Pick a "Best" opposing move
-            # Apply our possible and enemy "best" move
-            # Get a new state
-
-            if side == UPPER:
-
-                # If upper, we want our heuristic to be lower
-                criteria = min
-
-                # Pick an opposing move
-                #
-
-                return
-
-            elif side == LOWER:
-
-                # If lower, we want our heuristic to be higher
-                criteria = max
-
-                return
-
-        # new_state = deepcopy(self._game)
-        # new_state.take_turn(possible_move, None, self._side)
-        best_move = None
-        return best_move
-
-    # TODO
-    # func Minimax Algorithm
-    #   For each self move(combinatoric)
-    #       If terminal node ( depth limit reached or game over ):
-    #           return heuristic
-    #       elif self.side = upper:
-    #           // we want to be minimising our heuristic score
-    #           return min(value, func minimax)
-    #       elif self.side = lower
-    #           // we want to be maximising our heuristic score
-    #           return max (value, func minimax)
-    """
-
-    """
-    def min(self, alpha: int = -sys.maxsize, beta: int = sys.maxsize, depth: int = 0):
-        if (depth > MAX_DEPTH):
-            return self._game.heuristic()
-
-        for move in self.possible_moves():
-            beta = min(beta, max(alpha, beta, depth + 1))
-
-        if beta < alpha:
-            return alpha
-
-        return beta
-
-    def max(self, alpha: int = -sys.maxsize, beta: int = sys.maxsize, depth: int = 0):
-        # Variables
-
-        if (depth > MAX_DEPTH):
-            return self._game.heuristic()
-
-        poss_moves = self.possible_moves()
-
-        for move in poss_moves:
-            alpha = max(alpha, min(alpha, beta, depth + 1))
-
-        if alpha > beta:
-            return alpha
-
-        return beta
-
-    def mini_max(self):
-        best_val = 0
-        best_mov = None
-
-        # need enemy moves
-
-        for move in self.possible_moves(self._side):
-            new_state = deepcopy(self._game)
-
-            # minimax of our move
-            val = self.minimax_value(new_state.take_turn(move, None, self._side), 0)
-
-            if val > best_val:
-                best_val = val
-                best_mov = move
-
-        return best_mov
-
-    def minimax_value(self, move, depth, side):
-        max_cost = 0
-        min_cost = 0
-
-        # cut-off
-        if depth > MAX_DEPTH:
-            return self._game.heurisitc()
-
-        # max = upper
-        # not sure if this makes sense
-        # not sure if this makes sense
-
-        elif self._side == UPPER:
-            for move in self.possible_moves():
-                cost = self.minimax_value(move, depth + 1)
-                if cost > max_cost:
-                    max_cost = cost
-            return max_cost
-
-        else:
-            for move in self.possible_moves():
-                cost = self.minimax_value(move, depth + 1)
-                if cost < min_cost:
-                    min_cost = cost
-            return min_cost
-    """
-
-    def pls_work(self, game=None, side=UPPER):
-
-        # enemy relative to scope
-        enemy_side = "upper" if side == LOWER else LOWER
-
-        # represents who the enemy actually is
-        is_player = True if side == self._side else False
-
-        other_possible_moves = game.possible_moves(enemy_side)
-        # for e_move in possible_enemy_moves:
-
-        max_enemy_heur = -inf
-        max_moves = []
-        best_states = []
-
-        for possible_move in other_possible_moves:
-
-            new_state = deepcopy(self._game)
-
-            if is_player:
-                new_state.take_turn(possible_move, None, side)
-            else:
-                new_state.take_turn(None, possible_move, side)
-
-            val = new_state.heuristic(enemy_side)
-
-            if val > max_enemy_heur:
-                max_moves = []
-                max_moves.append(possible_move)
-
-                best_states = []
-                best_states.append(new_state)
-                max_enemy_heur = val
-
-        our_possible_moves = game.possible_moves(side)
-        best_moves = []
-        our_best_states = []
-        best_payoff = -inf
-
-        best_enemy_move = max_moves[0]
-
-        for our_move in our_possible_moves:
-
-            new_state = deepcopy(self._game)
-
-            if is_player:
-                new_state.take_turn(our_move, best_enemy_move, side)
-            else:
-                new_state.take_turn(best_enemy_move, our_move, side)
-
-            payoff = new_state.heuristic(side)
-
-            if payoff > best_payoff:
-                best_moves = []
-                best_moves.append(our_move)
-                best_payoff = payoff
-
-        return best_moves
-
     def adverserial(self):
+        """"
+        Adversarial search using multi-stage game theory and backwards induction.
 
-        optimal_move_p, exp_value = self.backprop(self._game, 0)
+        Returns the player's best current move
+        """
+
+        optimal_move_p, exp_value = self.msgt(self._game, 0)
         print('exp = ', exp_value)
         return optimal_move_p
 
-    def backprop(self, game=None, depth=0):
+    def msgt(self, game=None, depth=0):
+        """"
+        Performs a search for player's best current move using multi-stage game theory
+        and backwards induction.
 
+        Input:
+        * Game: a game state
+        * Depth: the current search depth
+        """
+
+        # depth reached, begin recursion
         if depth > MAX_DEPTH:
-            return None, game.heuristic(self._side)
+            return None, game.evaluation(self._side)
 
         enemy_side = "upper" if self._side == LOWER else LOWER
 
@@ -238,11 +66,12 @@ class Player:
         e_best_moves = []
         e_best_payoff = -inf
 
+        # identifying the player's best moves given a static board state
         for possible_move in game.possible_moves(self._side):
 
             new_state = deepcopy(game)
             new_state.take_turn(possible_move, None, self._side)
-            val = new_state.heuristic(self._side)
+            val = new_state.evaluation(self._side)
 
             if val > our_best_payoff:
                 our_best_moves = []
@@ -252,40 +81,43 @@ class Player:
             elif val == our_best_payoff:
                 our_best_moves.append(possible_move)
 
+        # identifying the enemy's best moves against our best moves
         for move in our_best_moves:
             for e_move in game.possible_moves(enemy_side):
 
                 new_state = deepcopy(game)
                 new_state.take_turn(move, e_move, self._side)
-                val = new_state.heuristic(enemy_side)
+                val = new_state.evaluation(enemy_side)
 
                 if val > e_best_payoff:
                     e_best_moves = []
                     e_best_moves.append(e_move)
                     e_best_payoff = val
-                    print("heur = ", val)
+                    # print("heur = ", val)
 
                 elif val == e_best_payoff:
                     e_best_moves.append(e_move)
 
+        # initialising payoff matrix
         payoff_matrix = np.zeros((len(our_best_moves), len(e_best_moves)))
         i = 0
 
+        # tree construction & search
         for p_moves in our_best_moves:
             j = 0
             for e_moves in e_best_moves:
                 new_state = deepcopy(game)
                 new_state.take_turn(p_moves, e_moves, self._side)
-                _, payoff = self.backprop(new_state, depth + 1)
+
+                # recurse
+                _, payoff = self.msgt(new_state, depth + 1)
                 payoff_matrix[i][j] = payoff
 
                 j += 1
             i += 1
 
-        # print(payoff_matrix)
-
+        # determining equilibrium solution & player's best move at given state
         moves, expected_value = self.solve_game(payoff_matrix)
-
         move_index_p = np.where(moves == np.amax(moves))[0][0]
         bmove_player = our_best_moves[move_index_p]
 
@@ -352,29 +184,29 @@ class Player:
         of the game, select an action to play this turn.
         """
 
-        ### Generate all possible moves
-        # Generate all swings and slides
-        # max_heur = -1000000
-        # max_moves = []
-        #
-        # for possible_move in self._game.possible_moves(self._side):
-        #
-        #     new_state = deepcopy(self._game)
-        #     new_state.take_turn(possible_move, None, self._side)
-        #     val = new_state.heuristic(self._side)
-        #
-        #     if val > max_heur:
-        #         max_moves = []
-        #         max_moves.append(possible_move)
-        #         max_heur = val
-        #
-        #     elif val == max_heur:
-        #         max_moves.append(possible_move)
-        #
-        #
-        # return choice(max_moves)
+        # adverserial AI
+        if ADVERSERIAL:
+            return self.adverserial()
 
-        return self.adverserial()
+        # greedy AI
+        max_heur = -1000000
+        max_moves = []
+
+        for possible_move in self._game.possible_moves(self._side):
+
+            new_state = deepcopy(self._game)
+            new_state.take_turn(possible_move, None, self._side)
+            val = new_state.evaluation(self._side)
+
+            if val > max_heur:
+                max_moves = []
+                max_moves.append(possible_move)
+                max_heur = val
+
+            elif val == max_heur:
+                max_moves.append(possible_move)
+
+        return choice(max_moves)
 
     def update(self, opponent_action, player_action):
         """
@@ -388,7 +220,7 @@ class Player:
         # player actions in the form:
 
         self._game.take_turn(player_action, opponent_action, self._side)
-        print(self._game.heuristic(self._side))
+        print(self._game.evaluation(self._side))
         # print("board: ")
         # self.print_board()
         # self.print_board(self._game.list_tokens(UPPER))
